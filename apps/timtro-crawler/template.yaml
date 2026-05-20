@@ -1,0 +1,195 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Timtro crawler service for Apify ingestion and AI sanitization.
+
+Parameters:
+  EnvironmentName:
+    Type: String
+    Default: dev
+  RawRentalPostsTableName:
+    Type: String
+    Default: timtro-raw-rental-posts
+  RentalInfoTableName:
+    Type: String
+    Default: timtro-rental-info
+  SanitizationQueueName:
+    Type: String
+    Default: timtro-sanitization
+  ApifyActorId:
+    Type: String
+  FacebookGroupUrls:
+    Type: CommaDelimitedList
+  ApifyToken:
+    Type: String
+    NoEcho: true
+  GeminiApiKey:
+    Type: String
+    NoEcho: true
+  GeminiModel:
+    Type: String
+    Default: gemini-2.5-flash
+  GeminiDataProcessingApproved:
+    Type: String
+    AllowedValues: ["true", "false"]
+    Default: "false"
+  TimtroUseFakeProviders:
+    Type: String
+    AllowedValues: ["true", "false"]
+    Default: "false"
+
+Conditions:
+  GeminiApproved: !Equals [!Ref GeminiDataProcessingApproved, "true"]
+
+Globals:
+  Function:
+    Runtime: nodejs24.x
+    Architectures:
+      - arm64
+    Timeout: 60
+    MemorySize: 512
+    Tracing: Active
+    Environment:
+      Variables:
+        ENVIRONMENT_NAME: !Ref EnvironmentName
+        RAW_RENTAL_POSTS_TABLE_NAME: !Ref RawRentalPostsTable
+        RENTAL_INFO_TABLE_NAME: !Ref RentalInfoTable
+        SANITIZATION_QUEUE_URL: !Ref SanitizationQueue
+        APIFY_ACTOR_ID: !Ref ApifyActorId
+        FACEBOOK_GROUP_URLS: !Join [",", !Ref FacebookGroupUrls]
+        APIFY_TOKEN: !Ref ApifyToken
+        GEMINI_API_KEY: !Ref GeminiApiKey
+        GEMINI_MODEL: !Ref GeminiModel
+        GEMINI_DATA_PROCESSING_APPROVED: !Ref GeminiDataProcessingApproved
+        TIMTRO_USE_FAKE_PROVIDERS: !Ref TimtroUseFakeProviders
+        LOG_LEVEL: info
+
+Resources:
+  RawRentalPostsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "${RawRentalPostsTableName}-${EnvironmentName}"
+      BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+      TimeToLiveSpecification:
+        AttributeName: expiresAt
+        Enabled: true
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+
+  RentalInfoTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "${RentalInfoTableName}-${EnvironmentName}"
+      BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+      AttributeDefinitions:
+        - AttributeName: region
+          AttributeType: S
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: region
+          KeyType: HASH
+        - AttributeName: id
+          KeyType: RANGE
+
+  SanitizationDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "${SanitizationQueueName}-dlq-${EnvironmentName}"
+      MessageRetentionPeriod: 1209600
+      SqsManagedSseEnabled: true
+
+  SanitizationQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "${SanitizationQueueName}-${EnvironmentName}"
+      VisibilityTimeout: 900
+      MessageRetentionPeriod: 345600
+      SqsManagedSseEnabled: true
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt SanitizationDeadLetterQueue.Arn
+        maxReceiveCount: 5
+
+  CrawlFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      SkipBuild: true
+    Properties:
+      Handler: crawl.handler
+      CodeUri: dist/
+      Description: Runs the scheduled Apify crawl and queues changed raw posts.
+      Timeout: 120
+      Events:
+        CrawlSchedule:
+          Type: ScheduleV2
+          Properties:
+            ScheduleExpression: rate(30 minutes)
+            Description: Run Timtro crawler every 30 minutes.
+            FlexibleTimeWindow:
+              Mode: "OFF"
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+              Resource: !GetAtt RawRentalPostsTable.Arn
+            - Effect: Allow
+              Action:
+                - sqs:SendMessage
+              Resource: !GetAtt SanitizationQueue.Arn
+
+  SanitizeFunction:
+    Type: AWS::Serverless::Function
+    Condition: GeminiApproved
+    Metadata:
+      SkipBuild: true
+    Properties:
+      Handler: sanitize.handler
+      CodeUri: dist/
+      Description: Sanitizes queued raw rental posts with the configured AI provider.
+      Timeout: 120
+      Events:
+        SanitizationEvents:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt SanitizationQueue.Arn
+            BatchSize: 5
+            FunctionResponseTypes:
+              - ReportBatchItemFailures
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:UpdateItem
+              Resource: !GetAtt RawRentalPostsTable.Arn
+            - Effect: Allow
+              Action:
+                - dynamodb:PutItem
+              Resource: !GetAtt RentalInfoTable.Arn
+
+  CrawlFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${CrawlFunction}"
+      RetentionInDays: 30
+
+  SanitizeFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Condition: GeminiApproved
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${SanitizeFunction}"
+      RetentionInDays: 30

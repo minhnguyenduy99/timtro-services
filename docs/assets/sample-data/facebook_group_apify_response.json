@@ -1,0 +1,689 @@
+[
+    {
+        "facebookUrl": "https://www.facebook.com/groups/2573980229535866/",
+        "url": "https://www.facebook.com/groups/binhthanh.phongtro.club/permalink/4675629119370956/",
+        "time": "2026-05-19T14:29:20.000Z",
+        "user": {
+            "id": "100003173321949",
+            "name": "Ngọc Thể"
+        },
+        "text": "🎉 DỰ ÁN MỚI Ở HÀNG XANH THỊ NGHÈ - CĂN HỘ 40M2 - BAN CÔNG THOÁNG MÁT 😍😍\n\nĐỊA CHỈ: 158 XVNT, BÌNH THẠNH\n\n✅ Căn hộ 1 Phòng ngủ, rộng 40m2, ban công thoáng mát\n✅ Full nội thất hoàn toàn mới\n✅ Sát Quận 1, các trường ĐH, siêu thị tiện lợi, khu ăn uống\n✅ Tiện ích ra vào vân tay, an ninh sạch sẽ, không chung chủ, giờ giấc tự do\n\n                📣LIÊN HỆ: 0932001590 (Ngọc Thể)\n                Hỗ trợ tư vấn tìm phòng miễn phí",
+        "topReactionsCount": 0,
+        "feedbackId": "ZmVlZGJhY2s6NDY3NTYyOTExOTM3MDk1Ng==",
+        "id": "UzpfSTEwMDAwMzE3MzMyMTk0OTpWSzo0Njc1NjI5MTE5MzcwOTU2",
+        "legacyId": "4675629119370956",
+        "attachments": [
+            {
+                "style_infos": [
+                    {
+                        "__typename": "AlbumAttachmentStyleInfo",
+                        "background_color": "FFC8C6B5"
+                    },
+                    {
+                        "__typename": "FeedStandardAttachmentStyleInfo"
+                    },
+                    {
+                        "__typename": "FutureOfFeedAttachmentStyleInfo"
+                    }
+                ],
+                "frame_sublayout_subattachments": {
+                    "count": 13,
+                    "nodes": [
+                        {
+                            "media": {
+                                "__typename": "Photo",
+                                "image": {
+                                    "height": 442,
+                                    "width": 590
+                                },
+                                "__isNode": "Photo",
+                                "id": "27405912595764482"
+                            }
+                        },
+                        {
+                            "media": {
+                                "__typename": "Photo",
+                                "image": {
+                                    "height": 442,
+                                    "width": 590
+                                },
+                                "__isNode": "Photo",
+                                "id": "27405913975764344"
+                            }
+                        },
+                        {
+                            "media": {
+                                "__typename": "Photo",
+                                "image": {
+                                    "height": 442,
+                                    "width": 590
+                                },
+                                "__isNode": "Photo",
+                                "id": "27405914749097600"
+                            }
+                        },
+                        {
+                            "media": {
+                                "__typename": "Photo",
+                                "image": {
+                                    "height": 442,
+                                    "width": 590
+                                },
+                                "__isNode": "Photo",
+                                "id": "27405914979097577"
+                            }
+                        },
+                        {
+                            "media": {
+                                "__typename": "Photo",
+                                "image": {
+                                    "height": 442,
+                                    "width": 590
+                                },
+                                "__isNode": "Photo",
+                                "id": "27405914415764300"
+                            }
+                        }
+                    ]
+                },
+                "mediaset_token": "pcb.4675629119370956",
+                "two_photos_subattachments": {
+                    "nodes": [
+                        {
+                            "deduplication_key": "7a1f8fd3c041fdcc60ac2db9ba823c4f",
+                            "media": {
+                                "__typename": "Photo",
+                                "image": {
+                                    "uri": "https://scontent-ord5-3.xx.fbcdn.net/v/t39.30808-6/702684657_27405966205759121_3966645963918965959_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=109&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=qFlEkynCfegQ7kNvwHeuIwS&_nc_oc=AdrdWV8trF3oULD-V8Aj4VXpxbsjyj03YFt5kbhwjfz94p-rK-fp5meiRgzPYLkHvzc&_nc_zt=23&_nc_ht=scontent-ord5-3.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af62EAcTv5Sk7FL58aSF88RBHRR4y8w6Pl0bElLoSjGZFQ&oe=6A125C43",
+                                    "height": 442,
+                                    "width": 590
+                                },
+                                "viewer_image": {
+                                    "height": 1108,
+                                    "width": 1478,
+                                    "uri": "https://scontent-ord5-3.xx.fbcdn.net/v/t39.30808-6/702684657_27405966205759121_3966645963918965959_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=qFlEkynCfegQ7kNvwHeuIwS&_nc_oc=AdrdWV8trF3oULD-V8Aj4VXpxbsjyj03YFt5kbhwjfz94p-rK-fp5meiRgzPYLkHvzc&_nc_zt=23&_nc_ht=scontent-ord5-3.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af6OqpAV01ODsgry79BfKKDv2eOUbgZHDAykDd2OJR-0tQ&oe=6A125C43"
+                                },
+                                "accessibility_caption": "May be an image of lighting, bedroom and indoors",
+                                "focus": {
+                                    "x": 0.5,
+                                    "y": 0.33
+                                },
+                                "__isMedia": "Photo",
+                                "photo_cix_screen": null,
+                                "id": "27405912595764482",
+                                "is_playable": false,
+                                "owner": {
+                                    "__typename": "User",
+                                    "id": "100003173321949"
+                                },
+                                "__isNode": "Photo"
+                            }
+                        },
+                        {
+                            "deduplication_key": "9c48044178fb0f0f66cf473d807967a6",
+                            "media": {
+                                "__typename": "Photo",
+                                "image": {
+                                    "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/702274261_27405967112425697_5014148437132550664_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=104&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=ZiSCAVmK9D0Q7kNvwGtmuDO&_nc_oc=AdrpJqRLQ1QyWGJhciGWREwEbQml-nNOPaV0cark9UjV_WBqF_Nm7SxFoxB9MQODaOE&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af7-6cwpMnR8ZLl4WMGmK6YH7z1oOVAb_22K5pwHUBIJRQ&oe=6A12337A",
+                                    "height": 442,
+                                    "width": 590
+                                },
+                                "viewer_image": {
+                                    "height": 1108,
+                                    "width": 1478,
+                                    "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/702274261_27405967112425697_5014148437132550664_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=ZiSCAVmK9D0Q7kNvwGtmuDO&_nc_oc=AdrpJqRLQ1QyWGJhciGWREwEbQml-nNOPaV0cark9UjV_WBqF_Nm7SxFoxB9MQODaOE&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af4rUkYfQ45rVSFuOrPr76Po2lG1-O4yhhidW5iLkGGaMg&oe=6A12337A"
+                                },
+                                "accessibility_caption": "May be an image of lighting, indoors, bedroom and text",
+                                "focus": {
+                                    "x": 0.5,
+                                    "y": 0.33
+                                },
+                                "__isMedia": "Photo",
+                                "photo_cix_screen": null,
+                                "id": "27405913975764344",
+                                "is_playable": false,
+                                "owner": {
+                                    "__typename": "User",
+                                    "id": "100003173321949"
+                                },
+                                "__isNode": "Photo"
+                            }
+                        }
+                    ]
+                },
+                "three_photos_subattachments": {
+                    "nodes": [
+                        {
+                            "deduplication_key": "7a1f8fd3c041fdcc60ac2db9ba823c4f",
+                            "media": {
+                                "__typename": "Photo",
+                                "image": {
+                                    "uri": "https://scontent-ord5-3.xx.fbcdn.net/v/t39.30808-6/702684657_27405966205759121_3966645963918965959_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=109&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=qFlEkynCfegQ7kNvwHeuIwS&_nc_oc=AdrdWV8trF3oULD-V8Aj4VXpxbsjyj03YFt5kbhwjfz94p-rK-fp5meiRgzPYLkHvzc&_nc_zt=23&_nc_ht=scontent-ord5-3.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af62EAcTv5Sk7FL58aSF88RBHRR4y8w6Pl0bElLoSjGZFQ&oe=6A125C43",
+                                    "height": 442,
+                                    "width": 590
+                                },
+                                "viewer_image": {
+                                    "height": 1108,
+                                    "width": 1478,
+                                    "uri": "https://scontent-ord5-3.xx.fbcdn.net/v/t39.30808-6/702684657_27405966205759121_3966645963918965959_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=qFlEkynCfegQ7kNvwHeuIwS&_nc_oc=AdrdWV8trF3oULD-V8Aj4VXpxbsjyj03YFt5kbhwjfz94p-rK-fp5meiRgzPYLkHvzc&_nc_zt=23&_nc_ht=scontent-ord5-3.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af6OqpAV01ODsgry79BfKKDv2eOUbgZHDAykDd2OJR-0tQ&oe=6A125C43"
+                                },
+                                "accessibility_caption": "May be an image of lighting, bedroom and indoors",
+                                "focus": {
+                                    "x": 0.5,
+                                    "y": 0.33
+                                },
+                                "__isMedia": "Photo",
+                                "photo_cix_screen": null,
+                                "id": "27405912595764482",
+                                "is_playable": false,
+                                "owner": {
+                                    "__typename": "User",
+                                    "id": "100003173321949"
+                                },
+                                "__isNode": "Photo"
+                            }
+                        },
+                        {
+                            "deduplication_key": "9c48044178fb0f0f66cf473d807967a6",
+                            "media": {
+                                "__typename": "Photo",
+                                "image": {
+                                    "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/702274261_27405967112425697_5014148437132550664_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=104&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=ZiSCAVmK9D0Q7kNvwGtmuDO&_nc_oc=AdrpJqRLQ1QyWGJhciGWREwEbQml-nNOPaV0cark9UjV_WBqF_Nm7SxFoxB9MQODaOE&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af7-6cwpMnR8ZLl4WMGmK6YH7z1oOVAb_22K5pwHUBIJRQ&oe=6A12337A",
+                                    "height": 442,
+                                    "width": 590
+                                },
+                                "viewer_image": {
+                                    "height": 1108,
+                                    "width": 1478,
+                                    "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/702274261_27405967112425697_5014148437132550664_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=ZiSCAVmK9D0Q7kNvwGtmuDO&_nc_oc=AdrpJqRLQ1QyWGJhciGWREwEbQml-nNOPaV0cark9UjV_WBqF_Nm7SxFoxB9MQODaOE&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af4rUkYfQ45rVSFuOrPr76Po2lG1-O4yhhidW5iLkGGaMg&oe=6A12337A"
+                                },
+                                "accessibility_caption": "May be an image of lighting, indoors, bedroom and text",
+                                "focus": {
+                                    "x": 0.5,
+                                    "y": 0.33
+                                },
+                                "__isMedia": "Photo",
+                                "photo_cix_screen": null,
+                                "id": "27405913975764344",
+                                "is_playable": false,
+                                "owner": {
+                                    "__typename": "User",
+                                    "id": "100003173321949"
+                                },
+                                "__isNode": "Photo"
+                            }
+                        },
+                        {
+                            "deduplication_key": "00a234562990bc4781c4d1f2365b2c19",
+                            "media": {
+                                "__typename": "Photo",
+                                "image": {
+                                    "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/702495622_27405967775758964_1123862652473280714_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=104&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=4y8s8viTAUgQ7kNvwH-2DwV&_nc_oc=Adq1ALnrOv850hAb494oO12RnoNIQU_lBJu_2cDpDpaHm65fFMaPzDkEvDDWHJjNBCE&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af56wg0ujC608iyxoIIGD6PuwIDWzfnrTgfg77wXqMe1nQ&oe=6A12500A",
+                                    "height": 442,
+                                    "width": 590
+                                },
+                                "viewer_image": {
+                                    "height": 1108,
+                                    "width": 1478,
+                                    "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/702495622_27405967775758964_1123862652473280714_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=4y8s8viTAUgQ7kNvwH-2DwV&_nc_oc=Adq1ALnrOv850hAb494oO12RnoNIQU_lBJu_2cDpDpaHm65fFMaPzDkEvDDWHJjNBCE&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af6s5O7KkVAMXq9f1nasazB3zQyJbr-Ks_j0cb-tDoMDiw&oe=6A12500A"
+                                },
+                                "accessibility_caption": "May be an image of indoors, bedroom and text",
+                                "focus": {
+                                    "x": 0.5,
+                                    "y": 0.33
+                                },
+                                "__isMedia": "Photo",
+                                "photo_cix_screen": null,
+                                "id": "27405914749097600",
+                                "is_playable": false,
+                                "owner": {
+                                    "__typename": "User",
+                                    "id": "100003173321949"
+                                },
+                                "__isNode": "Photo"
+                            }
+                        }
+                    ]
+                },
+                "four_photos_subattachments": {
+                    "nodes": [
+                        {
+                            "deduplication_key": "7a1f8fd3c041fdcc60ac2db9ba823c4f",
+                            "media": {
+                                "__typename": "Photo",
+                                "image": {
+                                    "uri": "https://scontent-ord5-3.xx.fbcdn.net/v/t39.30808-6/702684657_27405966205759121_3966645963918965959_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=109&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=qFlEkynCfegQ7kNvwHeuIwS&_nc_oc=AdrdWV8trF3oULD-V8Aj4VXpxbsjyj03YFt5kbhwjfz94p-rK-fp5meiRgzPYLkHvzc&_nc_zt=23&_nc_ht=scontent-ord5-3.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af62EAcTv5Sk7FL58aSF88RBHRR4y8w6Pl0bElLoSjGZFQ&oe=6A125C43",
+                                    "height": 442,
+                                    "width": 590
+                                },
+                                "viewer_image": {
+                                    "height": 1108,
+                                    "width": 1478,
+                                    "uri": "https://scontent-ord5-3.xx.fbcdn.net/v/t39.30808-6/702684657_27405966205759121_3966645963918965959_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=qFlEkynCfegQ7kNvwHeuIwS&_nc_oc=AdrdWV8trF3oULD-V8Aj4VXpxbsjyj03YFt5kbhwjfz94p-rK-fp5meiRgzPYLkHvzc&_nc_zt=23&_nc_ht=scontent-ord5-3.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af6OqpAV01ODsgry79BfKKDv2eOUbgZHDAykDd2OJR-0tQ&oe=6A125C43"
+                                },
+                                "accessibility_caption": "May be an image of lighting, bedroom and indoors",
+                                "focus": {
+                                    "x": 0.5,
+                                    "y": 0.33
+                                },
+                                "__isMedia": "Photo",
+                                "photo_cix_screen": null,
+                                "id": "27405912595764482",
+                                "is_playable": false,
+                                "owner": {
+                                    "__typename": "User",
+                                    "id": "100003173321949"
+                                },
+                                "__isNode": "Photo"
+                            }
+                        },
+                        {
+                            "deduplication_key": "9c48044178fb0f0f66cf473d807967a6",
+                            "media": {
+                                "__typename": "Photo",
+                                "image": {
+                                    "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/702274261_27405967112425697_5014148437132550664_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=104&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=ZiSCAVmK9D0Q7kNvwGtmuDO&_nc_oc=AdrpJqRLQ1QyWGJhciGWREwEbQml-nNOPaV0cark9UjV_WBqF_Nm7SxFoxB9MQODaOE&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af7-6cwpMnR8ZLl4WMGmK6YH7z1oOVAb_22K5pwHUBIJRQ&oe=6A12337A",
+                                    "height": 442,
+                                    "width": 590
+                                },
+                                "viewer_image": {
+                                    "height": 1108,
+                                    "width": 1478,
+                                    "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/702274261_27405967112425697_5014148437132550664_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=ZiSCAVmK9D0Q7kNvwGtmuDO&_nc_oc=AdrpJqRLQ1QyWGJhciGWREwEbQml-nNOPaV0cark9UjV_WBqF_Nm7SxFoxB9MQODaOE&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af4rUkYfQ45rVSFuOrPr76Po2lG1-O4yhhidW5iLkGGaMg&oe=6A12337A"
+                                },
+                                "accessibility_caption": "May be an image of lighting, indoors, bedroom and text",
+                                "focus": {
+                                    "x": 0.5,
+                                    "y": 0.33
+                                },
+                                "__isMedia": "Photo",
+                                "photo_cix_screen": null,
+                                "id": "27405913975764344",
+                                "is_playable": false,
+                                "owner": {
+                                    "__typename": "User",
+                                    "id": "100003173321949"
+                                },
+                                "__isNode": "Photo"
+                            }
+                        },
+                        {
+                            "deduplication_key": "00a234562990bc4781c4d1f2365b2c19",
+                            "media": {
+                                "__typename": "Photo",
+                                "image": {
+                                    "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/702495622_27405967775758964_1123862652473280714_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=104&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=4y8s8viTAUgQ7kNvwH-2DwV&_nc_oc=Adq1ALnrOv850hAb494oO12RnoNIQU_lBJu_2cDpDpaHm65fFMaPzDkEvDDWHJjNBCE&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af56wg0ujC608iyxoIIGD6PuwIDWzfnrTgfg77wXqMe1nQ&oe=6A12500A",
+                                    "height": 442,
+                                    "width": 590
+                                },
+                                "viewer_image": {
+                                    "height": 1108,
+                                    "width": 1478,
+                                    "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/702495622_27405967775758964_1123862652473280714_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=4y8s8viTAUgQ7kNvwH-2DwV&_nc_oc=Adq1ALnrOv850hAb494oO12RnoNIQU_lBJu_2cDpDpaHm65fFMaPzDkEvDDWHJjNBCE&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af6s5O7KkVAMXq9f1nasazB3zQyJbr-Ks_j0cb-tDoMDiw&oe=6A12500A"
+                                },
+                                "accessibility_caption": "May be an image of indoors, bedroom and text",
+                                "focus": {
+                                    "x": 0.5,
+                                    "y": 0.33
+                                },
+                                "__isMedia": "Photo",
+                                "photo_cix_screen": null,
+                                "id": "27405914749097600",
+                                "is_playable": false,
+                                "owner": {
+                                    "__typename": "User",
+                                    "id": "100003173321949"
+                                },
+                                "__isNode": "Photo"
+                            }
+                        },
+                        {
+                            "deduplication_key": "3939b08ec5f9dcf5c4f64ba0eee685a3",
+                            "media": {
+                                "__typename": "Photo",
+                                "image": {
+                                    "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/702538744_27405968052425603_2892033669446074592_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=105&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=eLucWWCYibwQ7kNvwGiDeq2&_nc_oc=AdrQWP-kEeeN-Op1dhSaReoQRI9T3w69jRTzxPem7ND2qb5kGW-KEIVvGjLTE7pn-uU&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af54JNCOm_WOqvDxH3bfh4kSYLtlNPuzTwktBddCFnUGmw&oe=6A125FED",
+                                    "height": 442,
+                                    "width": 590
+                                },
+                                "viewer_image": {
+                                    "height": 1108,
+                                    "width": 1478,
+                                    "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/702538744_27405968052425603_2892033669446074592_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=eLucWWCYibwQ7kNvwGiDeq2&_nc_oc=AdrQWP-kEeeN-Op1dhSaReoQRI9T3w69jRTzxPem7ND2qb5kGW-KEIVvGjLTE7pn-uU&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af7298MjIaI6y-oD00i4fZ4uTV5E-URPAnu4I_AylAR1bA&oe=6A125FED"
+                                },
+                                "accessibility_caption": "May be an image of ‎bedroom and ‎text that says '‎NICEROOM Traot NICE ROOM gi á coỘcOng ت‎'‎‎",
+                                "focus": {
+                                    "x": 0.5,
+                                    "y": 0.33
+                                },
+                                "__isMedia": "Photo",
+                                "photo_cix_screen": null,
+                                "id": "27405914979097577",
+                                "is_playable": false,
+                                "owner": {
+                                    "__typename": "User",
+                                    "id": "100003173321949"
+                                },
+                                "__isNode": "Photo"
+                            }
+                        }
+                    ]
+                },
+                "five_photos_subattachments": {
+                    "count": 13,
+                    "nodes": [
+                        {
+                            "deduplication_key": "7a1f8fd3c041fdcc60ac2db9ba823c4f",
+                            "media": {
+                                "__typename": "Photo",
+                                "image": {
+                                    "uri": "https://scontent-ord5-3.xx.fbcdn.net/v/t39.30808-6/702684657_27405966205759121_3966645963918965959_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=109&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=qFlEkynCfegQ7kNvwHeuIwS&_nc_oc=AdrdWV8trF3oULD-V8Aj4VXpxbsjyj03YFt5kbhwjfz94p-rK-fp5meiRgzPYLkHvzc&_nc_zt=23&_nc_ht=scontent-ord5-3.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af62EAcTv5Sk7FL58aSF88RBHRR4y8w6Pl0bElLoSjGZFQ&oe=6A125C43",
+                                    "height": 442,
+                                    "width": 590
+                                },
+                                "viewer_image": {
+                                    "height": 1108,
+                                    "width": 1478,
+                                    "uri": "https://scontent-ord5-3.xx.fbcdn.net/v/t39.30808-6/702684657_27405966205759121_3966645963918965959_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=qFlEkynCfegQ7kNvwHeuIwS&_nc_oc=AdrdWV8trF3oULD-V8Aj4VXpxbsjyj03YFt5kbhwjfz94p-rK-fp5meiRgzPYLkHvzc&_nc_zt=23&_nc_ht=scontent-ord5-3.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af6OqpAV01ODsgry79BfKKDv2eOUbgZHDAykDd2OJR-0tQ&oe=6A125C43"
+                                },
+                                "accessibility_caption": "May be an image of lighting, bedroom and indoors",
+                                "focus": {
+                                    "x": 0.5,
+                                    "y": 0.33
+                                },
+                                "__isMedia": "Photo",
+                                "photo_cix_screen": null,
+                                "id": "27405912595764482",
+                                "is_playable": false,
+                                "owner": {
+                                    "__typename": "User",
+                                    "id": "100003173321949"
+                                },
+                                "__isNode": "Photo"
+                            }
+                        },
+                        {
+                            "deduplication_key": "9c48044178fb0f0f66cf473d807967a6",
+                            "media": {
+                                "__typename": "Photo",
+                                "image": {
+                                    "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/702274261_27405967112425697_5014148437132550664_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=104&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=ZiSCAVmK9D0Q7kNvwGtmuDO&_nc_oc=AdrpJqRLQ1QyWGJhciGWREwEbQml-nNOPaV0cark9UjV_WBqF_Nm7SxFoxB9MQODaOE&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af7-6cwpMnR8ZLl4WMGmK6YH7z1oOVAb_22K5pwHUBIJRQ&oe=6A12337A",
+                                    "height": 442,
+                                    "width": 590
+                                },
+                                "viewer_image": {
+                                    "height": 1108,
+                                    "width": 1478,
+                                    "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/702274261_27405967112425697_5014148437132550664_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=ZiSCAVmK9D0Q7kNvwGtmuDO&_nc_oc=AdrpJqRLQ1QyWGJhciGWREwEbQml-nNOPaV0cark9UjV_WBqF_Nm7SxFoxB9MQODaOE&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af4rUkYfQ45rVSFuOrPr76Po2lG1-O4yhhidW5iLkGGaMg&oe=6A12337A"
+                                },
+                                "accessibility_caption": "May be an image of lighting, indoors, bedroom and text",
+                                "focus": {
+                                    "x": 0.5,
+                                    "y": 0.33
+                                },
+                                "__isMedia": "Photo",
+                                "photo_cix_screen": null,
+                                "id": "27405913975764344",
+                                "is_playable": false,
+                                "owner": {
+                                    "__typename": "User",
+                                    "id": "100003173321949"
+                                },
+                                "__isNode": "Photo"
+                            }
+                        },
+                        {
+                            "deduplication_key": "00a234562990bc4781c4d1f2365b2c19",
+                            "media": {
+                                "__typename": "Photo",
+                                "image": {
+                                    "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/702495622_27405967775758964_1123862652473280714_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=104&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=4y8s8viTAUgQ7kNvwH-2DwV&_nc_oc=Adq1ALnrOv850hAb494oO12RnoNIQU_lBJu_2cDpDpaHm65fFMaPzDkEvDDWHJjNBCE&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af56wg0ujC608iyxoIIGD6PuwIDWzfnrTgfg77wXqMe1nQ&oe=6A12500A",
+                                    "height": 442,
+                                    "width": 590
+                                },
+                                "viewer_image": {
+                                    "height": 1108,
+                                    "width": 1478,
+                                    "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/702495622_27405967775758964_1123862652473280714_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=4y8s8viTAUgQ7kNvwH-2DwV&_nc_oc=Adq1ALnrOv850hAb494oO12RnoNIQU_lBJu_2cDpDpaHm65fFMaPzDkEvDDWHJjNBCE&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af6s5O7KkVAMXq9f1nasazB3zQyJbr-Ks_j0cb-tDoMDiw&oe=6A12500A"
+                                },
+                                "accessibility_caption": "May be an image of indoors, bedroom and text",
+                                "focus": {
+                                    "x": 0.5,
+                                    "y": 0.33
+                                },
+                                "__isMedia": "Photo",
+                                "photo_cix_screen": null,
+                                "id": "27405914749097600",
+                                "is_playable": false,
+                                "owner": {
+                                    "__typename": "User",
+                                    "id": "100003173321949"
+                                },
+                                "__isNode": "Photo"
+                            }
+                        },
+                        {
+                            "deduplication_key": "3939b08ec5f9dcf5c4f64ba0eee685a3",
+                            "media": {
+                                "__typename": "Photo",
+                                "image": {
+                                    "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/702538744_27405968052425603_2892033669446074592_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=105&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=eLucWWCYibwQ7kNvwGiDeq2&_nc_oc=AdrQWP-kEeeN-Op1dhSaReoQRI9T3w69jRTzxPem7ND2qb5kGW-KEIVvGjLTE7pn-uU&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af54JNCOm_WOqvDxH3bfh4kSYLtlNPuzTwktBddCFnUGmw&oe=6A125FED",
+                                    "height": 442,
+                                    "width": 590
+                                },
+                                "viewer_image": {
+                                    "height": 1108,
+                                    "width": 1478,
+                                    "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/702538744_27405968052425603_2892033669446074592_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=eLucWWCYibwQ7kNvwGiDeq2&_nc_oc=AdrQWP-kEeeN-Op1dhSaReoQRI9T3w69jRTzxPem7ND2qb5kGW-KEIVvGjLTE7pn-uU&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af7298MjIaI6y-oD00i4fZ4uTV5E-URPAnu4I_AylAR1bA&oe=6A125FED"
+                                },
+                                "accessibility_caption": "May be an image of ‎bedroom and ‎text that says '‎NICEROOM Traot NICE ROOM gi á coỘcOng ت‎'‎‎",
+                                "focus": {
+                                    "x": 0.5,
+                                    "y": 0.33
+                                },
+                                "__isMedia": "Photo",
+                                "photo_cix_screen": null,
+                                "id": "27405914979097577",
+                                "is_playable": false,
+                                "owner": {
+                                    "__typename": "User",
+                                    "id": "100003173321949"
+                                },
+                                "__isNode": "Photo"
+                            }
+                        },
+                        {
+                            "deduplication_key": "aaf2144a323ad89d914f1d8954b9b420",
+                            "media": {
+                                "__typename": "Photo",
+                                "image": {
+                                    "uri": "https://scontent-ord5-1.xx.fbcdn.net/v/t39.30808-6/702696616_27405967472425661_2623029255900328031_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=101&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=rT2ghLl4iQwQ7kNvwHNWaJb&_nc_oc=Adr8oblB8Ooa_rP4v9BQa9aUD72k-6RKfP1beIbUTztFfJwkw8jAerSxGXBhq37rnBw&_nc_zt=23&_nc_ht=scontent-ord5-1.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af5dImSgI4qGUXTsZmoZ1UTOBE4rH_9FPSpT9d1SKAQKkA&oe=6A123029",
+                                    "height": 442,
+                                    "width": 590
+                                },
+                                "viewer_image": {
+                                    "height": 1108,
+                                    "width": 1478,
+                                    "uri": "https://scontent-ord5-1.xx.fbcdn.net/v/t39.30808-6/702696616_27405967472425661_2623029255900328031_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=rT2ghLl4iQwQ7kNvwHNWaJb&_nc_oc=Adr8oblB8Ooa_rP4v9BQa9aUD72k-6RKfP1beIbUTztFfJwkw8jAerSxGXBhq37rnBw&_nc_zt=23&_nc_ht=scontent-ord5-1.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af7oH6Y_FT8SsoweIxPc_GcUE93pG6xXe3n8Whh5Gpid8A&oe=6A123029"
+                                },
+                                "accessibility_caption": "May be an image of lighting, indoors and bedroom",
+                                "focus": {
+                                    "x": 0.5,
+                                    "y": 0.33
+                                },
+                                "__isMedia": "Photo",
+                                "photo_cix_screen": null,
+                                "id": "27405914415764300",
+                                "is_playable": false,
+                                "owner": {
+                                    "__typename": "User",
+                                    "id": "100003173321949"
+                                },
+                                "__isNode": "Photo"
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "likesCount": 0,
+        "sharesCount": 0,
+        "commentsCount": 0,
+        "topComments": [],
+        "facebookId": "2573980229535866",
+        "groupTitle": "PHÒNG TRỌ BÌNH THẠNH",
+        "inputUrl": "https://www.facebook.com/groups/2573980229535866/"
+    },
+    {
+        "facebookUrl": "https://www.facebook.com/groups/2573980229535866/",
+        "url": "https://www.facebook.com/groups/binhthanh.phongtro.club/permalink/4675628586037676/",
+        "time": "2026-05-19T14:29:00.000Z",
+        "user": {
+            "id": "pfbid02HMAerdQSAynvbxL8UMwtAxe5DWc2xNAYwCbqmcYxXjSv839QUiq6vrW7NMPLqnpzl",
+            "name": "Trần Nguyễn Bình Minh"
+        },
+        "text": "😫Tìm phòng sạch đẹp mà giá hợp lý ở Bình Quới — Bình Thạnh\nBên mình còn phòng:\n\n✔️Thoáng mát, có cửa sổ, ban công\n\n✔️Nội thất đầy đủ \n\n✔️An ninh, giờ giấc tự do \n\n✔️Gần chợ/trường/khu làm việc\n\n💸Giá chỉ từ 5trxxx/tháng\n\n🎁Hỗ trợ giữ phòng - cọc linh động \n\n📞Liên hệ ngay: 0937450711 Minh",
+        "topReactionsCount": 0,
+        "feedbackId": "ZmVlZGJhY2s6NDY3NTYyODU4NjAzNzY3Ng==",
+        "id": "UzpfSTEwMDAxMzM1ODM4Njc5MzpWSzo0Njc1NjI4NTg2MDM3Njc2",
+        "legacyId": "4675628586037676",
+        "attachments": [
+            {
+                "mediaset_token": "pcb.4675628586037676",
+                "url": "https://www.facebook.com/media/set/?set=pcb.4675628586037676&type=1",
+                "comet_product_tag_feed_overlay_renderer": null
+            },
+            {
+                "thumbnail": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/701206196_2496083044180284_7068436594735972564_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=102&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=Rw6Y8KeSI8gQ7kNvwFnDmr-&_nc_oc=Adofg2LqUrCN_sUJ4nCb1r-VBYcnRZlcBBAzdZ9AWHNIzWKp-kIz1mqm97odKLsV6J4&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af7jwg7KmU0YSNBYmNfnP5YVi7UkoknKFsAUviVhizJvGA&oe=6A125092",
+                "__typename": "Photo",
+                "is_playable": false,
+                "image": {
+                    "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/701206196_2496083044180284_7068436594735972564_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=102&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=Rw6Y8KeSI8gQ7kNvwFnDmr-&_nc_oc=Adofg2LqUrCN_sUJ4nCb1r-VBYcnRZlcBBAzdZ9AWHNIzWKp-kIz1mqm97odKLsV6J4&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af7jwg7KmU0YSNBYmNfnP5YVi7UkoknKFsAUviVhizJvGA&oe=6A125092",
+                    "height": 590,
+                    "width": 443
+                },
+                "id": "2496082270847028",
+                "__isMedia": "Photo",
+                "photo_cix_screen": null,
+                "copyright_banner_info": null,
+                "owner": {
+                    "__typename": "User",
+                    "id": "pfbid02HMAerdQSAynvbxL8UMwtAxe5DWc2xNAYwCbqmcYxXjSv839QUiq6vrW7NMPLqnpzl"
+                },
+                "ocrText": "May be an image of sliding door"
+            },
+            {
+                "thumbnail": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/701273381_2496083107513611_755751670934727265_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=111&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=a-LuFqYoK9sQ7kNvwFa4pcG&_nc_oc=Adqf91IEQzSt0Ufy97o9HHhGXf-glFivpSGSGxKuMFnszZONRcv_KaVwEk1pvB6vLmQ&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af4Uj6xHZHCOeaMocO9zNUv4ySL8XXModIjkmIeQf-C0hw&oe=6A124785",
+                "__typename": "Photo",
+                "is_playable": false,
+                "image": {
+                    "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/701273381_2496083107513611_755751670934727265_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=111&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=a-LuFqYoK9sQ7kNvwFa4pcG&_nc_oc=Adqf91IEQzSt0Ufy97o9HHhGXf-glFivpSGSGxKuMFnszZONRcv_KaVwEk1pvB6vLmQ&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af4Uj6xHZHCOeaMocO9zNUv4ySL8XXModIjkmIeQf-C0hw&oe=6A124785",
+                    "height": 590,
+                    "width": 443
+                },
+                "id": "2496082420847013",
+                "__isMedia": "Photo",
+                "photo_cix_screen": null,
+                "copyright_banner_info": null,
+                "owner": {
+                    "__typename": "User",
+                    "id": "pfbid02HMAerdQSAynvbxL8UMwtAxe5DWc2xNAYwCbqmcYxXjSv839QUiq6vrW7NMPLqnpzl"
+                },
+                "ocrText": "May be an image of indoors and bedroom"
+            },
+            {
+                "thumbnail": "https://scontent-ord5-1.xx.fbcdn.net/v/t39.30808-6/701254391_2496083027513619_2370518600732608587_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=106&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=suhzxEpEVMEQ7kNvwGj0go2&_nc_oc=AdofMfCspXvzlpR5bVIv4I2eNQSmvn6HYAD-nTtcAbw_1nuBAK83FzfpG4XavPb0wvo&_nc_zt=23&_nc_ht=scontent-ord5-1.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af7jF78ppAJIf7yFDoHaNATCE5cgihignMhY67yEcFMFhg&oe=6A1250A7",
+                "__typename": "Photo",
+                "is_playable": false,
+                "image": {
+                    "uri": "https://scontent-ord5-1.xx.fbcdn.net/v/t39.30808-6/701254391_2496083027513619_2370518600732608587_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=106&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=suhzxEpEVMEQ7kNvwGj0go2&_nc_oc=AdofMfCspXvzlpR5bVIv4I2eNQSmvn6HYAD-nTtcAbw_1nuBAK83FzfpG4XavPb0wvo&_nc_zt=23&_nc_ht=scontent-ord5-1.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af7jF78ppAJIf7yFDoHaNATCE5cgihignMhY67yEcFMFhg&oe=6A1250A7",
+                    "height": 590,
+                    "width": 443
+                },
+                "id": "2496082284180360",
+                "__isMedia": "Photo",
+                "photo_cix_screen": null,
+                "copyright_banner_info": null,
+                "owner": {
+                    "__typename": "User",
+                    "id": "pfbid02HMAerdQSAynvbxL8UMwtAxe5DWc2xNAYwCbqmcYxXjSv839QUiq6vrW7NMPLqnpzl"
+                },
+                "ocrText": "May be an image of indoors and bedroom"
+            },
+            {
+                "thumbnail": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/701465689_2496083117513610_7651297169813888944_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=104&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=DLDFZ8Jc46QQ7kNvwEh3VMr&_nc_oc=AdrOpcPgAlPn29QVNAhW1fuvdG4FxzCMR48dgx5_UsV94KaS5qQRi6dKKvHgolXAMvg&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af6PDv8Gl-xinWO7h-UBL7BDVA9Gf0Dkgv_QikS5rERa9w&oe=6A122D10",
+                "__typename": "Photo",
+                "is_playable": false,
+                "image": {
+                    "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/701465689_2496083117513610_7651297169813888944_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=104&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=DLDFZ8Jc46QQ7kNvwEh3VMr&_nc_oc=AdrOpcPgAlPn29QVNAhW1fuvdG4FxzCMR48dgx5_UsV94KaS5qQRi6dKKvHgolXAMvg&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af6PDv8Gl-xinWO7h-UBL7BDVA9Gf0Dkgv_QikS5rERa9w&oe=6A122D10",
+                    "height": 590,
+                    "width": 443
+                },
+                "id": "2496082430847012",
+                "__isMedia": "Photo",
+                "photo_cix_screen": null,
+                "copyright_banner_info": null,
+                "owner": {
+                    "__typename": "User",
+                    "id": "pfbid02HMAerdQSAynvbxL8UMwtAxe5DWc2xNAYwCbqmcYxXjSv839QUiq6vrW7NMPLqnpzl"
+                },
+                "ocrText": "May be an image of bedroom"
+            },
+            {
+                "thumbnail": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/701480410_2496083134180275_2876291591770902681_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=103&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=W2-kG0VaHHYQ7kNvwFJqueG&_nc_oc=AdpZ2mU3UY52fvSxMbI_i9hERE2k0GcoElvjZmJJXT7MHfSrmcOUnWY8BbwsAA6WrgE&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af6M9w8LrYPVa0J_6rHhlBb45rZrMXMKjJ96rOsArIL_dg&oe=6A1246E4",
+                "__typename": "Photo",
+                "is_playable": false,
+                "image": {
+                    "uri": "https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/701480410_2496083134180275_2876291591770902681_n.jpg?stp=dst-jpg_s590x590_tt6&_nc_cat=103&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=W2-kG0VaHHYQ7kNvwFJqueG&_nc_oc=AdpZ2mU3UY52fvSxMbI_i9hERE2k0GcoElvjZmJJXT7MHfSrmcOUnWY8BbwsAA6WrgE&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af6M9w8LrYPVa0J_6rHhlBb45rZrMXMKjJ96rOsArIL_dg&oe=6A1246E4",
+                    "height": 590,
+                    "width": 443
+                },
+                "id": "2496082554180333",
+                "__isMedia": "Photo",
+                "photo_cix_screen": null,
+                "copyright_banner_info": null,
+                "owner": {
+                    "__typename": "User",
+                    "id": "pfbid02HMAerdQSAynvbxL8UMwtAxe5DWc2xNAYwCbqmcYxXjSv839QUiq6vrW7NMPLqnpzl"
+                },
+                "ocrText": "No photo description available."
+            }
+        ],
+        "likesCount": 0,
+        "sharesCount": 0,
+        "commentsCount": 3,
+        "topComments": [
+            {
+                "commentUrl": "https://www.facebook.com/groups/binhthanh.phongtro.club/permalink/4675628586037676/?comment_id=4675629046037630",
+                "commentId": "4675629046037630",
+                "id": "Y29tbWVudDo0Njc1NjI4NTg2MDM3Njc2XzQ2NzU2MjkwNDYwMzc2MzA=",
+                "feedbackId": "ZmVlZGJhY2s6NDY3NTYyODU4NjAzNzY3Nl80Njc1NjI5MDQ2MDM3NjMw",
+                "date": "2026-05-19T14:29:19.000Z",
+                "text": ".",
+                "profileUrl": "https://www.facebook.com/binhminh.2102",
+                "profilePicture": "https://scontent-ord5-3.xx.fbcdn.net/v/t39.30808-1/610940091_2377924779329445_3189769195364940923_n.jpg?stp=cp6_dst-jpg_s32x32_tt6&_nc_cat=109&ccb=1-7&_nc_sid=e99d92&_nc_ohc=j762lWrUVUAQ7kNvwHwqlBb&_nc_oc=AdrZekEVSt9v713kVQmSqCwJFJJ2HWuPaZ5vmmMwitDSw_RmBDaQXde_44NawSm2UDc&_nc_zt=24&_nc_ht=scontent-ord5-3.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af7MXwvVV2bYkw4HZiN-K0fZa8cAGEM8L1UDrovDsP1bXA&oe=6A12373E",
+                "profileId": "pfbid02HMAerdQSAynvbxL8UMwtAxe5DWc2xNAYwCbqmcYxXjSv839QUiq6vrW7NMPLqnpzl",
+                "profileName": "Trần Nguyễn Bình Minh",
+                "likesCount": "0",
+                "threadingDepth": 0
+            },
+            {
+                "commentUrl": "https://www.facebook.com/groups/binhthanh.phongtro.club/permalink/4675628586037676/?comment_id=4675628969370971",
+                "commentId": "4675628969370971",
+                "id": "Y29tbWVudDo0Njc1NjI4NTg2MDM3Njc2XzQ2NzU2Mjg5NjkzNzA5NzE=",
+                "feedbackId": "ZmVlZGJhY2s6NDY3NTYyODU4NjAzNzY3Nl80Njc1NjI4OTY5MzcwOTcx",
+                "date": "2026-05-19T14:29:16.000Z",
+                "text": ".",
+                "profileUrl": "https://www.facebook.com/binhminh.2102",
+                "profilePicture": "https://scontent-ord5-3.xx.fbcdn.net/v/t39.30808-1/610940091_2377924779329445_3189769195364940923_n.jpg?stp=cp6_dst-jpg_s32x32_tt6&_nc_cat=109&ccb=1-7&_nc_sid=e99d92&_nc_ohc=j762lWrUVUAQ7kNvwHwqlBb&_nc_oc=AdrZekEVSt9v713kVQmSqCwJFJJ2HWuPaZ5vmmMwitDSw_RmBDaQXde_44NawSm2UDc&_nc_zt=24&_nc_ht=scontent-ord5-3.xx&_nc_gid=McmaMDkc5UHNGxmr7bPPrw&_nc_ss=7d289&oh=00_Af7MXwvVV2bYkw4HZiN-K0fZa8cAGEM8L1UDrovDsP1bXA&oe=6A12373E",
+                "profileId": "pfbid02HMAerdQSAynvbxL8UMwtAxe5DWc2xNAYwCbqmcYxXjSv839QUiq6vrW7NMPLqnpzl",
+                "profileName": "Trần Nguyễn Bình Minh",
+                "likesCount": "0",
+                "threadingDepth": 0
+            }
+        ],
+        "facebookId": "2573980229535866",
+        "groupTitle": "PHÒNG TRỌ BÌNH THẠNH",
+        "inputUrl": "https://www.facebook.com/groups/2573980229535866/"
+    }
+]

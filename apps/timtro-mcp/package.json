@@ -1,0 +1,19 @@
+{
+  "name": "timtro-mcp",
+  "version": "1.0.0",
+  "description": "MCP server - tim phong tro TP.HCM tu cache JSON (timtro)",
+  "type": "module",
+  "main": "dist/server.js",
+  "packageManager": "pnpm@11.1.3",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@cfworker/json-schema": "^4.1.1",
+    "@modelcontextprotocol/server": "^2.0.0-alpha.2",
+    "zod": "^4.4.3"
+  }
+}

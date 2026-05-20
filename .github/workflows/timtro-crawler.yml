@@ -1,0 +1,118 @@
+name: timtro-crawler
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/timtro-crawler/**"
+      - ".github/workflows/timtro-crawler.yml"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "tsconfig.base.json"
+      - "tsconfig.json"
+  pull_request:
+    paths:
+      - "apps/timtro-crawler/**"
+      - ".github/workflows/timtro-crawler.yml"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "tsconfig.base.json"
+      - "tsconfig.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  SAM_STACK_NAME: ${{ vars.TIMTRO_CRAWLER_STACK_NAME }}
+  SAM_DEPLOY_BUCKET: ${{ vars.SAM_DEPLOY_BUCKET }}
+  TIMTRO_CRAWLER_ENVIRONMENT: ${{ vars.TIMTRO_CRAWLER_ENVIRONMENT }}
+  GEMINI_DATA_PROCESSING_APPROVED: ${{ vars.GEMINI_DATA_PROCESSING_APPROVED }}
+  APIFY_ACTOR_ID: ${{ vars.APIFY_ACTOR_ID }}
+  FACEBOOK_GROUP_URLS: ${{ vars.FACEBOOK_GROUP_URLS }}
+  APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm nx test timtro-crawler
+
+      - run: pnpm nx build timtro-crawler
+
+      - uses: aws-actions/setup-sam@v2
+
+      - run: sam validate --lint
+        working-directory: apps/timtro-crawler
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm nx build timtro-crawler
+
+      - uses: aws-actions/setup-sam@v2
+
+      - uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+
+      - name: Block deploy until Gemini data processing is approved
+        if: env.GEMINI_DATA_PROCESSING_APPROVED != 'true'
+        run: |
+          echo "Set GEMINI_DATA_PROCESSING_APPROVED=true after approving Gemini data handling for Facebook UGC."
+          exit 1
+
+      - run: >
+          sam deploy
+          --template template.yaml
+          --stack-name "${SAM_STACK_NAME}"
+          --s3-bucket "${SAM_DEPLOY_BUCKET}"
+          --region "${AWS_REGION}"
+          --capabilities CAPABILITY_IAM
+          --no-fail-on-empty-changeset
+          --parameter-overrides
+          EnvironmentName="${TIMTRO_CRAWLER_ENVIRONMENT}"
+          ApifyActorId="${APIFY_ACTOR_ID}"
+          FacebookGroupUrls="${FACEBOOK_GROUP_URLS}"
+          ApifyToken="${APIFY_TOKEN}"
+          GeminiApiKey="${GEMINI_API_KEY}"
+          GeminiDataProcessingApproved="${GEMINI_DATA_PROCESSING_APPROVED}"
+        working-directory: apps/timtro-crawler

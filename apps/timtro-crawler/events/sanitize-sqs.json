@@ -1,0 +1,20 @@
+{
+  "Records": [
+    {
+      "messageId": "local-message-1",
+      "receiptHandle": "local-receipt",
+      "body": "{\"rawPostId\":\"fb_2573980229535866_4675629119370956\",\"contentHash\":\"local-content-hash\",\"crawlRunId\":\"local-run\",\"source\":\"fb\",\"groupId\":\"2573980229535866\",\"postId\":\"4675629119370956\"}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1779235200000",
+        "SenderId": "local",
+        "ApproximateFirstReceiveTimestamp": "1779235200001"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "local",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:ap-southeast-1:000000000000:timtro-sanitization-dev",
+      "awsRegion": "ap-southeast-1"
+    }
+  ]
+}

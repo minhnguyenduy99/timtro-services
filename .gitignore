@@ -1,0 +1,8 @@
+node_modules/
+.pnpm-store/
+dist/
+.nx/
+.corepack/
+.env
+*.log
+.DS_Store

@@ -1,0 +1,23 @@
+{
+  "updated_at": "2026-05-16T08:00:00.000Z",
+  "items": [
+    {
+      "id": "sample_1",
+      "source": "facebook",
+      "district_hint": "Bình Thạnh",
+      "url": "https://example.com/listings/sample_1",
+      "text": "PHÒNG TRỌ BÌNH THẠNH — Hẻm Xô Viết Nghệ Tĩnh gần HUTECH\nGiá thuê 2tr5/tháng (bao phí rác). Cọc 1tr.\nĐiện 4k/kWh, nước 100k/người.\nLh Zalo: 09xx xxx xxx"
+    },
+    {
+      "id": "sample_2",
+      "source": "web",
+      "url": "https://example.com/listings/sample_2",
+      "text": "Cho thuê phòng đầy đủ nội thất khu làng đại học Thủ Đức. Giá 3.000.000đ/tháng. Tiền cọc 2 triệu. Ưu tiên sinh viên."
+    },
+    {
+      "id": "sample_3",
+      "source": "facebook",
+      "text": "Sang nhượng phòng Q10 — đường Hòa Hưng. Thuê 3500k, cọc 3500k. Gần ĐH Bách Khoa cơ sở 2."
+    }
+  ]
+}
