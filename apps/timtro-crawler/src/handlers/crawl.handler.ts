@@ -57,15 +57,17 @@ export async function handler(_event: ScheduledEvent): Promise<{ statusCode: num
 
 async function createDefaultDependencies(): Promise<CrawlHandlerDependencies> {
   const config = loadCrawlerConfig();
-  const documentClient = createDocumentClient({ region: config.awsRegion, endpoint: config.dynamodbEndpoint });
-  const sqsClient = createSqsClient({ region: config.awsRegion, endpoint: config.sqsEndpoint });
+  const documentClient = createDocumentClient({ region: config.awsRegion });
+  const sqsClient = createSqsClient({ region: config.awsRegion });
   const rawStore = new DynamoRawPostStore(documentClient, config.rawRentalPostsTableName);
   const queue = new SqsSanitizationQueue(sqsClient, config.sanitizationQueueUrl);
   const provider = createApifyProvider(config);
 
   return {
     crawler: new ApifyCrawlerService(provider),
-    ingestion: new RawPostIngestionService(rawStore, queue)
+    ingestion: new RawPostIngestionService(rawStore, queue, {
+      enqueueSanitization: config.enqueueSanitization
+    })
   };
 }
 

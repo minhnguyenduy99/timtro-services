@@ -62,7 +62,7 @@ async function processRecord(record: SQSRecord, service: RentalSanitizationServi
 
 function createDefaultService(): RentalSanitizationService {
   const config = loadCrawlerConfig();
-  const documentClient = createDocumentClient({ region: config.awsRegion, endpoint: config.dynamodbEndpoint });
+  const documentClient = createDocumentClient({ region: config.awsRegion });
   const rawStore = new DynamoRawPostStore(documentClient, config.rawRentalPostsTableName);
   const rentalInfoStore = new DynamoRentalInfoStore(documentClient, config.rentalInfoTableName);
 

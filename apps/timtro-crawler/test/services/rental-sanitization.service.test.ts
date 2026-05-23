@@ -30,9 +30,14 @@ const rentalInfo: RentalInfo = {
   source: "fb",
   sourcePostId: "post",
   address: "123 Nguyen Trai",
-  city: "Ho Chi Minh",
-  district: "District 1",
+  city: "ho_chi_minh",
+  cityLabel: "Hồ Chí Minh",
+  district: "district_1",
+  districtLabel: "Quận 1",
   title: "Phong tro Quan 1",
+  description: "Cho thue phong tro",
+  price: 3_200_000,
+  priceUnit: "VND",
   postDate: "2026-05-19T00:00:00.000Z",
   timestamp: "2026-05-20T00:00:00.000Z",
   originalLink: "https://facebook.com/post",
@@ -182,7 +187,7 @@ describe("RentalSanitizationService", () => {
     await expect(service.process(message)).resolves.toMatchObject({ outcome: "failed" });
     expect(rawStore.failedError).toMatchObject({
       category: "validation",
-      message: "DomainValidationError",
+      message: "validation",
       retryable: false
     });
     expect(rentalStore.records).toEqual([]);

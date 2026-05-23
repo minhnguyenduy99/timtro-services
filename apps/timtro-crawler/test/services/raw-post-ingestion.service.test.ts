@@ -107,4 +107,31 @@ describe("RawPostIngestionService", () => {
     await expect(service.ingest([post], "run-1")).rejects.toThrow("SQS unavailable");
     expect(store.records.get("fb_2573980229535866_4675629119370956")?.processStatus).toBe("pending");
   });
+
+  it("does not enqueue sanitization when enqueue is disabled", async () => {
+    service = new RawPostIngestionService(store, queue, { enqueueSanitization: false });
+
+    const result = await service.ingest([post], "run-1");
+
+    expect(result).toMatchObject({ stored: 1, enqueued: 0 });
+    expect(store.records.get("fb_2573980229535866_4675629119370956")?.processStatus).toBe("pending");
+    expect(queue.send).not.toHaveBeenCalled();
+  });
+
+  it("clears sanitizedCount when changed content resets a completed record to pending", async () => {
+    await service.ingest([post], "run-1");
+    store.records.set("fb_2573980229535866_4675629119370956", {
+      ...store.records.get("fb_2573980229535866_4675629119370956")!,
+      processStatus: "completed",
+      sanitizedCount: 2
+    });
+
+    await service.ingest([{ ...post, text: "Noi dung da sua" }], "run-2");
+
+    expect(store.records.get("fb_2573980229535866_4675629119370956")).toMatchObject({
+      processStatus: "pending",
+      text: "Noi dung da sua"
+    });
+    expect(store.records.get("fb_2573980229535866_4675629119370956")?.sanitizedCount).toBeUndefined();
+  });
 });

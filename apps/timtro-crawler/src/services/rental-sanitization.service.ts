@@ -30,10 +30,22 @@ export class RentalSanitizationService {
 
     try {
       const result = await this.provider.sanitize(rawPost);
+
+      if (result.kind === "non_rental") {
+        await this.rawStore.markCompleted(rawPost.id, rawPost.contentHash, 0, now.toISOString());
+        return { outcome: "completed", sanitizedCount: 0 };
+      }
+
       for (const record of result.records) {
         await this.rentalInfoStore.put(record);
       }
-      await this.rawStore.markCompleted(rawPost.id, rawPost.contentHash, result.records.length, now.toISOString());
+
+      await this.rawStore.markCompleted(
+        rawPost.id,
+        rawPost.contentHash,
+        result.records.length,
+        now.toISOString()
+      );
       return { outcome: "completed", sanitizedCount: result.records.length };
     } catch (error) {
       if (error instanceof AiProviderError && error.kind === "retryable") {
@@ -62,6 +74,12 @@ export class RentalSanitizationService {
 }
 
 function redactFailureMessage(error: unknown): string {
+  if (error instanceof AiProviderError) {
+    return error.kind;
+  }
+  if (error instanceof DomainValidationError) {
+    return error.category;
+  }
   if (error instanceof Error) {
     return error.name;
   }

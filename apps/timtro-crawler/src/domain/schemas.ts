@@ -1,6 +1,8 @@
 import { z } from "zod";
 
 import { buildRegion, toRentalInfo, type RentalInfo, type RentalInfoCandidate } from "./rental-info";
+import { resolveRegionFields } from "./region-mapping";
+import { isValidRentalPrice, UNKNOWN_RENTAL_PRICE } from "./rent-price";
 
 export class DomainValidationError extends Error {
   readonly category = "validation";
@@ -18,6 +20,13 @@ export const rentalAttachmentSchema = z.object({
   url: z.string().url()
 });
 
+const rentalPriceSchema = z
+  .number()
+  .int()
+  .refine((value) => value === UNKNOWN_RENTAL_PRICE || isValidRentalPrice(value), {
+    message: "price must be -1 or a positive VND amount divisible by 1000"
+  });
+
 export const rentalInfoCandidateSchema = z.object({
   source: z.literal("fb").optional(),
   sourcePostId: nonEmptyString,
@@ -26,16 +35,34 @@ export const rentalInfoCandidateSchema = z.object({
   city: nonEmptyString,
   district: nonEmptyString,
   title: nonEmptyString,
+  description: z.string().optional(),
+  price: rentalPriceSchema.optional(),
+  priceUnit: z.literal("VND").optional(),
   postDate: z.string().datetime(),
   timestamp: z.string().datetime(),
   originalLink: z.string().url(),
   attachments: z.array(rentalAttachmentSchema).default([])
 });
 
-export const rentalInfoSchema = rentalInfoCandidateSchema.extend({
+export const rentalInfoSchema = z.object({
   source: z.literal("fb"),
   region: nonEmptyString,
-  id: nonEmptyString
+  id: nonEmptyString,
+  sourcePostId: nonEmptyString,
+  sourceCommentId: nonEmptyString.optional(),
+  address: nonEmptyString,
+  city: nonEmptyString,
+  cityLabel: nonEmptyString,
+  district: nonEmptyString,
+  districtLabel: nonEmptyString,
+  title: nonEmptyString,
+  description: z.string(),
+  price: rentalPriceSchema,
+  priceUnit: z.literal("VND"),
+  postDate: z.string().datetime(),
+  timestamp: z.string().datetime(),
+  originalLink: z.string().url(),
+  attachments: z.array(rentalAttachmentSchema).default([])
 });
 
 export const sanitizationMessageSchema = z.object({
@@ -53,7 +80,8 @@ export function validateRentalInfoCandidate(input: unknown): RentalInfo {
     throw new DomainValidationError(parsed.error.issues.map((issue) => issue.message).join("; "));
   }
 
-  const region = buildRegion(parsed.data.city, parsed.data.district);
+  const regionFields = resolveRegionFields(parsed.data.city, parsed.data.district);
+  const region = buildRegion(regionFields.city, regionFields.district);
   if (!region.includes("_") || region.startsWith("_") || region.endsWith("_")) {
     throw new DomainValidationError("city and district are required to build a region key");
   }

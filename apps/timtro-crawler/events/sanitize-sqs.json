@@ -3,7 +3,7 @@
     {
       "messageId": "local-message-1",
       "receiptHandle": "local-receipt",
-      "body": "{\"rawPostId\":\"fb_2573980229535866_4675629119370956\",\"contentHash\":\"local-content-hash\",\"crawlRunId\":\"local-run\",\"source\":\"fb\",\"groupId\":\"2573980229535866\",\"postId\":\"4675629119370956\"}",
+      "body": "{\"rawPostId\":\"fb_2573980229535866_4680536685546866\",\"contentHash\":\"5946e04300d69313f8fe78d1df48c17bb92824fcfde1da5e8a78baef8ab485d9\",\"crawlRunId\":\"qjAEpwd5GL20o5jff\",\"groupId\":\"2573980229535866\",\"postId\":\"4680536685546866\",\"source\":\"fb\"}",
       "attributes": {
         "ApproximateReceiveCount": "1",
         "SentTimestamp": "1779235200000",

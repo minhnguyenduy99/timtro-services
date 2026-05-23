@@ -50,7 +50,7 @@ export class ApifyClientProvider implements ApifyCrawlerProvider {
   async runFacebookGroupActor(options: ApifyRunOptions): Promise<{ runId: string; items: ApifyFacebookPost[] }> {
     const input = {
       startUrls: options.groupUrls.map((url) => ({ url })),
-      resultsLimit: 100,
+      resultsLimit: 1,
       maxPostDate: "7 days"
     };
     const run = await this.client.actor(options.actorId).call(input);

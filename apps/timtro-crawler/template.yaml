@@ -6,15 +6,6 @@ Parameters:
   EnvironmentName:
     Type: String
     Default: dev
-  RawRentalPostsTableName:
-    Type: String
-    Default: timtro-raw-rental-posts
-  RentalInfoTableName:
-    Type: String
-    Default: timtro-rental-info
-  SanitizationQueueName:
-    Type: String
-    Default: timtro-sanitization
   ApifyActorId:
     Type: String
   FacebookGroupUrls:
@@ -67,7 +58,7 @@ Resources:
   RawRentalPostsTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: !Sub "${RawRentalPostsTableName}-${EnvironmentName}"
+      TableName: !Sub "timtro-raw-rental-posts-${EnvironmentName}"
       BillingMode: PAY_PER_REQUEST
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled: true
@@ -86,7 +77,7 @@ Resources:
   RentalInfoTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: !Sub "${RentalInfoTableName}-${EnvironmentName}"
+      TableName: !Sub "timtro-rental-info-${EnvironmentName}"
       BillingMode: PAY_PER_REQUEST
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled: true
@@ -106,14 +97,14 @@ Resources:
   SanitizationDeadLetterQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: !Sub "${SanitizationQueueName}-dlq-${EnvironmentName}"
+      QueueName: !Sub "timtro-sanitization-dlq-${EnvironmentName}"
       MessageRetentionPeriod: 1209600
       SqsManagedSseEnabled: true
 
   SanitizationQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: !Sub "${SanitizationQueueName}-${EnvironmentName}"
+      QueueName: !Sub "timtro-sanitization-${EnvironmentName}"
       VisibilityTimeout: 900
       MessageRetentionPeriod: 345600
       SqsManagedSseEnabled: true

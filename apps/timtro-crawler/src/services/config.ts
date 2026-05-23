@@ -31,13 +31,14 @@ export type CrawlerConfig = {
   geminiApiKey?: string;
   geminiModel: string;
   awsRegion?: string;
-  dynamodbEndpoint?: string;
-  sqsEndpoint?: string;
   useFakeProviders: boolean;
+  enqueueSanitization: boolean;
 };
 
 export function loadCrawlerConfig(env: NodeJS.ProcessEnv = process.env): CrawlerConfig {
   const useFakeProviders = env.TIMTRO_USE_FAKE_PROVIDERS === "true";
+  const enqueueSanitization =
+    env.TIMTRO_ENQUEUE_SANITIZATION !== "false" && !useFakeProviders;
 
   return {
     rawRentalPostsTableName: requireEnv("RAW_RENTAL_POSTS_TABLE_NAME", env),
@@ -49,8 +50,7 @@ export function loadCrawlerConfig(env: NodeJS.ProcessEnv = process.env): Crawler
     geminiApiKey: useFakeProviders ? optionalEnv("GEMINI_API_KEY", env) : requireEnv("GEMINI_API_KEY", env),
     geminiModel: env.GEMINI_MODEL ?? "gemini-2.5-flash",
     awsRegion: optionalEnv("AWS_REGION", env),
-    dynamodbEndpoint: optionalEnv("DYNAMODB_ENDPOINT", env),
-    sqsEndpoint: optionalEnv("SQS_ENDPOINT", env),
-    useFakeProviders
+    useFakeProviders,
+    enqueueSanitization
   };
 }

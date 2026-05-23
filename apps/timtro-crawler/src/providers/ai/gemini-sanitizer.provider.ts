@@ -3,7 +3,7 @@ import { GoogleGenAI } from "@google/genai";
 import type { RawRentalPost } from "../../domain/raw-rental-post";
 import { DomainValidationError } from "../../domain/schemas";
 import { AiProviderError, type AiProviderMetadata, type AiSanitizationResult, type AiSanitizerProvider } from "./ai-sanitizer.provider";
-import { aiSanitizationSchemaVersion, parseAiSanitizationResponse } from "./sanitization-schema";
+import { aiSanitizationSchemaVersion, normalizeAiSanitizationResponse, parseAiSanitizationResponse } from "./sanitization-schema";
 
 export type GeminiClientLike = {
   models: {
@@ -55,7 +55,9 @@ export class GeminiSanitizerProvider implements AiSanitizerProvider {
           temperature: 0.1
         }
       });
-      const parsed = parseAiSanitizationResponse(JSON.parse(readResponseText(response)));
+      const parsed = parseAiSanitizationResponse(
+        normalizeAiSanitizationResponse(rawPost, JSON.parse(readResponseText(response)))
+      );
       if (parsed.classification === "non_rental") {
         return { kind: "non_rental", records: [], metadata: this.metadata };
       }
@@ -90,7 +92,11 @@ function buildPrompt(rawPost: RawRentalPost): string {
   return [
     "Extract Vietnamese rental listing information from this Facebook post evidence.",
     "Return JSON only with classification=rental and rentals[], or classification=non_rental and rentals=[].",
-    "Each rental must include address, city, district, title, postDate, timestamp, originalLink, and attachments.",
+    "Each rental must include sourcePostId, address, city, district, title, postDate, timestamp, originalLink, attachments, and price when a monthly rent is mentioned.",
+    "Use city and district as human-readable Vietnamese location labels only (for example city=Hồ Chí Minh, district=Quận 1 or Bình Thạnh). Do not invent alternate spellings or English keys.",
+    "Use price as the monthly rent in whole VND divisible by 1000 (for example 3200000 for 3.2 triệu). Never use phone numbers as price.",
+    "If no monthly rent can be confidently extracted, set price to -1.",
+    "Use ISO-8601 datetime strings for postDate and timestamp.",
     JSON.stringify(payload)
   ].join("\n");
 }

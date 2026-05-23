@@ -9,10 +9,15 @@ export type RawPostIngestionResult = {
   enqueued: number;
 };
 
+export type RawPostIngestionOptions = {
+  enqueueSanitization?: boolean;
+};
+
 export class RawPostIngestionService {
   constructor(
     private readonly store: RawPostStore,
-    private readonly queue: SanitizationQueue
+    private readonly queue: SanitizationQueue,
+    private readonly options: RawPostIngestionOptions = {}
   ) {}
 
   async ingest(posts: ApifyFacebookPost[], crawlRunId: string, now = new Date()): Promise<RawPostIngestionResult> {
@@ -30,15 +35,15 @@ export class RawPostIngestionService {
       if (!existing) {
         await this.store.putNew(rawPost);
         result.stored += 1;
-        await this.enqueue(rawPost, crawlRunId);
-        result.enqueued += 1;
+        if (await this.enqueue(rawPost, crawlRunId)) {
+          result.enqueued += 1;
+        }
         continue;
       }
 
       if (existing.contentHash === rawPost.contentHash) {
         result.unchanged += 1;
-        if (existing.processStatus === "pending") {
-          await this.enqueue(rawPost, crawlRunId);
+        if (existing.processStatus === "pending" && (await this.enqueue(rawPost, crawlRunId))) {
           result.enqueued += 1;
         }
         continue;
@@ -52,14 +57,19 @@ export class RawPostIngestionService {
         sanitizedCount: undefined
       });
       result.changed += 1;
-      await this.enqueue(rawPost, crawlRunId);
-      result.enqueued += 1;
+      if (await this.enqueue(rawPost, crawlRunId)) {
+        result.enqueued += 1;
+      }
     }
 
     return result;
   }
 
-  private async enqueue(rawPost: RawRentalPost, crawlRunId: string): Promise<void> {
+  private async enqueue(rawPost: RawRentalPost, crawlRunId: string): Promise<boolean> {
+    if (this.options.enqueueSanitization === false) {
+      return false;
+    }
+
     await this.queue.send(
       createSanitizationMessage({
         rawPostId: rawPost.id,
@@ -69,5 +79,6 @@ export class RawPostIngestionService {
         postId: rawPost.postId
       })
     );
+    return true;
   }
 }

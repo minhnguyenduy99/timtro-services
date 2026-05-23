@@ -8,7 +8,6 @@ import type { SanitizationMessage } from "../domain/sanitization-message";
 
 export type AwsClientConfig = {
   region?: string;
-  endpoint?: string;
 };
 
 export type RawPostStore = {
@@ -81,12 +80,14 @@ export class DynamoRawPostStore implements RawPostStore {
         Key: { id: rawPostId },
         UpdateExpression:
           "SET processStatus = :status, sanitizedCount = :count, updatedAt = :updatedAt REMOVE processError",
-        ConditionExpression: "contentHash = :contentHash",
+        ConditionExpression: "contentHash = :contentHash AND (processStatus = :pending OR processStatus = :fail)",
         ExpressionAttributeValues: {
           ":contentHash": expectedContentHash,
           ":status": "completed",
           ":count": sanitizedCount,
-          ":updatedAt": timestamp
+          ":updatedAt": timestamp,
+          ":pending": "pending",
+          ":fail": "fail"
         }
       })
     );

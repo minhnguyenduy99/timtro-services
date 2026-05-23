@@ -15,7 +15,7 @@ Required non-secret environment variables:
 - `ENVIRONMENT_NAME`: Deployment environment label.
 - `LOG_LEVEL`: Operational log level.
 - `TIMTRO_USE_FAKE_PROVIDERS`: Set to `true` for offline local debugging.
-- `DYNAMODB_ENDPOINT`, `SQS_ENDPOINT`: Optional LocalStack endpoints for SAM local debugging.
+- `TIMTRO_ENQUEUE_SANITIZATION`: Set to `false` on `CrawlFunction` during local crawl-only invokes to keep raw posts `pending` until you manually run `sanitize:invoke`. Automatically disabled when `TIMTRO_USE_FAKE_PROVIDERS=true`.
 
 Required provider credentials (Lambda environment variables, `NoEcho` in CloudFormation):
 
@@ -49,15 +49,46 @@ pnpm nx sanitize:watch timtro-crawler
 In another terminal, invoke SAM local against the prebuilt `dist/` output. No `sam build` step is required because the template uses `SkipBuild: true`.
 
 ```bash
-pnpm nx sam:local:crawl timtro-crawler
-pnpm nx sam:local:sanitize timtro-crawler
+cp env.local.example.json env.local.json   # edit table names / queue URL for your AWS account
+pnpm nx crawl:invoke timtro-crawler
+pnpm nx sanitize:invoke timtro-crawler
 ```
 
-Those targets read `template.yaml` directly and pass `--env-vars env.dev.json` plus CloudFormation parameter overrides derived from that file.
+`sam local invoke` uses two mechanisms from `env.local.json`:
 
-For offline local debugging, keep `TimtroUseFakeProviders=true` in `env.dev.json` and point DynamoDB/SQS clients at LocalStack through the function-level `DYNAMODB_ENDPOINT` and `SQS_ENDPOINT` overrides. Use real Apify or Gemini credentials only when intentionally testing live provider behavior.
+| Section | SAM flag | Purpose |
+|---------|----------|---------|
+| `Parameters` | `--parameter-overrides` | CloudFormation template parameters only (`ApifyActorId`, `TimtroUseFakeProviders`, …) |
+| `CrawlFunction` / `SanitizeFunction` | `--env-vars` | Lambda runtime env overrides (`RAW_RENTAL_POSTS_TABLE_NAME`, `SANITIZATION_QUEUE_URL`, …) |
+
+SAM local does not resolve `!Ref` on DynamoDB/SQS to real names (you may see `RawRentalPostsTable` instead). Put actual table names and queue URLs under the function sections. Deployed Lambdas still get those values from `template.yaml` `!Ref` automatically.
+
+For offline debugging with fake providers only, `TimtroUseFakeProviders=true` is enough for a smoke invoke. To hit real DynamoDB/SQS locally, set the function env vars to resources in your account.
+
+## Deploy
+
+`samconfig.toml` defines per-environment SAM defaults (`dev`, `staging`, `prod`). Build handlers first, then deploy.
+
+**CloudFormation parameters** (template `Parameters:`) come from `env.dev.json` → `Parameters` via `--parameter-overrides`. `sam deploy` does not read `--env-vars`; that flag is only for `sam local invoke`.
+
+```bash
+pnpm nx build timtro-crawler
+cd apps/timtro-crawler
+sam deploy --config-env dev \
+  --parameter-overrides "$(node scripts/format-sam-parameter-overrides.mjs env.dev.json)"
+```
+
+Production deploy from CI uses `--config-env prod` and passes secrets via `--parameter-overrides` from GitHub variables.
+
+```bash
+pnpm nx deploy timtro-crawler
+```
+
+That Nx target runs `sam deploy --config-env dev` with parameters from `env.dev.json`. For prod, use `--config-env prod` and pass `--parameter-overrides` (or set `s3_bucket` in `samconfig.toml`).
 
 ## Process Status
+
+Raw posts are always written by the crawl Lambda with `processStatus = pending`. Only the sanitize Lambda may transition a raw post to `completed` or `fail` after it processes the SQS message. If you invoke crawl locally against real DynamoDB and SQS, the deployed sanitize Lambda can finish within seconds and update the same record before you inspect it.
 
 - `pending`: Raw post evidence is stored and waiting for sanitization, or a transient retry is still owned by SQS.
 - `completed`: Sanitization ran successfully. `sanitizedCount=0` means the post was confidently classified as non-rental.

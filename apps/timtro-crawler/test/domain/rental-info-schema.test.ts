@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { DomainValidationError, validateRentalInfoCandidate } from "../../src/domain/schemas";
+import { UNKNOWN_RENTAL_PRICE } from "../../src/domain/rent-price";
 
 const validCandidate = {
   sourcePostId: "4675629119370956",
@@ -19,7 +20,80 @@ describe("rental info validation", () => {
     expect(validateRentalInfoCandidate(validCandidate)).toMatchObject({
       region: "ho_chi_minh_district_1",
       id: "fb_4675629119370956",
-      source: "fb"
+      source: "fb",
+      city: "ho_chi_minh",
+      cityLabel: "Hồ Chí Minh",
+      district: "district_1",
+      districtLabel: "Quận 1",
+      price: UNKNOWN_RENTAL_PRICE,
+      priceUnit: "VND"
+    });
+  });
+
+  it("maps alternate AI city and district labels to canonical keys", () => {
+    expect(
+      validateRentalInfoCandidate({
+        ...validCandidate,
+        city: "HCMC",
+        district: "Q1"
+      })
+    ).toMatchObject({
+      region: "ho_chi_minh_district_1",
+      city: "ho_chi_minh",
+      cityLabel: "Hồ Chí Minh",
+      district: "district_1",
+      districtLabel: "Quận 1"
+    });
+
+    expect(
+      validateRentalInfoCandidate({
+        ...validCandidate,
+        city: "Hồ Chí Minh",
+        district: "Bình Thạnh"
+      })
+    ).toMatchObject({
+      region: "ho_chi_minh_binh_thanh",
+      city: "ho_chi_minh",
+      cityLabel: "Hồ Chí Minh",
+      district: "binh_thanh",
+      districtLabel: "Bình Thạnh"
+    });
+  });
+
+  it("persists normalized monthly rent fields", () => {
+    expect(
+      validateRentalInfoCandidate({
+        ...validCandidate,
+        price: 3_200_000,
+        priceUnit: "VND"
+      })
+    ).toMatchObject({
+      price: 3_200_000,
+      priceUnit: "VND"
+    });
+  });
+
+  it("defaults missing description to an empty string", () => {
+    expect(validateRentalInfoCandidate(validCandidate)).toMatchObject({
+      description: ""
+    });
+  });
+
+  it("persists description when provided on the candidate", () => {
+    expect(
+      validateRentalInfoCandidate({
+        ...validCandidate,
+        description: "Cho thue phong tro gan truong Dai hoc"
+      })
+    ).toMatchObject({
+      description: "Cho thue phong tro gan truong Dai hoc"
+    });
+  });
+
+  it("defaults missing price to -1", () => {
+    expect(validateRentalInfoCandidate(validCandidate)).toMatchObject({
+      price: UNKNOWN_RENTAL_PRICE,
+      priceUnit: "VND"
     });
   });
 

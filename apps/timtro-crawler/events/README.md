@@ -4,14 +4,14 @@
 
 `sanitize-sqs.json` mimics the SQS event source mapping for `SanitizeFunction`. The body contains only the raw post id, content hash, crawl run id, and source identity required for idempotent processing.
 
-Use fake providers for local offline invokes via `env.dev.json`:
+Use `env.local.json` for local invokes (copy from `env.local.example.json`):
 
 ```bash
-cp env.example.json env.dev.json
+cp env.local.example.json env.local.json
 pnpm nx crawl:watch timtro-crawler
-pnpm nx sam:local:crawl timtro-crawler
+pnpm nx crawl:invoke timtro-crawler
 ```
 
-Set `GeminiDataProcessingApproved` to `"true"` in `env.dev.json` so `SanitizeFunction` is included in the SAM template during local invoke.
+Put CloudFormation values under `Parameters`. Put `RAW_RENTAL_POSTS_TABLE_NAME`, `RENTAL_INFO_TABLE_NAME`, and `SANITIZATION_QUEUE_URL` under `CrawlFunction` / `SanitizeFunction` so `--env-vars` overrides SAM local's unresolved `!Ref` values.
 
-When using LocalStack, set `DYNAMODB_ENDPOINT` and `SQS_ENDPOINT` in the function sections of `env.dev.json`. Keep real API tokens outside the repository.
+Set `GeminiDataProcessingApproved` to `"true"` so `SanitizeFunction` is included in the template during local invoke.

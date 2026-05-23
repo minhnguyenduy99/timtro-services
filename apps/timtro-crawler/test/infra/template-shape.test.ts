@@ -24,7 +24,19 @@ describe("SAM template shape", () => {
     expect(template).toContain("ReportBatchItemFailures");
   });
 
-  it("parameterizes environment-specific resources and provider config", () => {
+  it("names tables and queues from stack resources, not deploy parameters", () => {
+    expect(template).not.toContain("RawRentalPostsTableName:");
+    expect(template).not.toContain("RentalInfoTableName:");
+    expect(template).not.toContain("SanitizationQueueName:");
+    expect(template).toContain('TableName: !Sub "timtro-raw-rental-posts-${EnvironmentName}"');
+    expect(template).toContain('TableName: !Sub "timtro-rental-info-${EnvironmentName}"');
+    expect(template).toContain('QueueName: !Sub "timtro-sanitization-${EnvironmentName}"');
+    expect(template).toContain("RAW_RENTAL_POSTS_TABLE_NAME: !Ref RawRentalPostsTable");
+    expect(template).toContain("RENTAL_INFO_TABLE_NAME: !Ref RentalInfoTable");
+    expect(template).toContain("SANITIZATION_QUEUE_URL: !Ref SanitizationQueue");
+  });
+
+  it("parameterizes provider and environment config", () => {
     for (const parameter of [
       "ApifyActorId",
       "FacebookGroupUrls",
@@ -80,6 +92,7 @@ describe("CI and local event fixtures", () => {
     expect(workflow).toContain("pnpm nx test timtro-crawler");
     expect(workflow).toContain("pnpm nx build timtro-crawler");
     expect(workflow).not.toContain("sam build");
+    expect(workflow).toContain("--config-env prod");
     expect(workflow).toContain("configure-aws-credentials");
     expect(workflow).toContain("GEMINI_DATA_PROCESSING_APPROVED");
     expect(workflow).toContain("APIFY_TOKEN");
@@ -90,7 +103,7 @@ describe("CI and local event fixtures", () => {
     expect(crawlEvent.source).toBe("aws.scheduler");
     expect(sanitizeEvent.Records[0].eventSource).toBe("aws:sqs");
     expect(JSON.parse(sanitizeEvent.Records[0].body)).toMatchObject({
-      rawPostId: "fb_2573980229535866_4675629119370956",
+      rawPostId: "fb_2573980229535866_4680536685546866",
       source: "fb"
     });
   });

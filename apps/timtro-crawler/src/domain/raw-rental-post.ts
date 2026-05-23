@@ -130,35 +130,76 @@ export function computeRawPostContentHash(value: unknown): string {
 }
 
 export function extractAttachmentSummaries(attachments: unknown[]): RentalAttachment[] {
-  return attachments.flatMap((attachment): RentalAttachment[] => {
-    if (!isRecord(attachment)) {
-      return [];
+  const seenUrls = new Set<string>();
+  const summaries: RentalAttachment[] = [];
+
+  for (const attachment of attachments) {
+    collectAttachmentSummaries(attachment, summaries, seenUrls);
+  }
+
+  return summaries;
+}
+
+function collectAttachmentSummaries(
+  value: unknown,
+  summaries: RentalAttachment[],
+  seenUrls: Set<string>
+): void {
+  if (!isRecord(value)) {
+    return;
+  }
+
+  const mediaType = String(value.type ?? value.mediaType ?? value.__typename ?? "").toLowerCase();
+  const url = extractAttachmentUrl(value);
+
+  if (url && !isFacebookMediaSetUrl(url) && !seenUrls.has(url)) {
+    seenUrls.add(url);
+    summaries.push({
+      type: mediaType.includes("video") || mediaType.includes("reel") ? "video" : "photo",
+      url
+    });
+  }
+
+  for (const [key, child] of Object.entries(value)) {
+    if (key.endsWith("_subattachments") && isRecord(child) && Array.isArray(child.nodes)) {
+      for (const node of child.nodes) {
+        collectAttachmentSummaries(node, summaries, seenUrls);
+      }
     }
+  }
 
-    const type = String(attachment.type ?? attachment.mediaType ?? "").toLowerCase();
-    const url = firstString(
-      attachment.url,
-      attachment.href,
-      attachment.fullImageUrl,
-      attachment.fullPicture,
-      nestedString(attachment, "image", "uri"),
-      nestedString(attachment, "image", "url"),
-      nestedString(attachment, "thumbnail", "uri"),
-      nestedString(attachment, "thumbnail", "url"),
-      nestedString(attachment, "media", "image", "uri"),
-      nestedString(attachment, "media", "image", "url")
-    );
+  if (isRecord(value.media)) {
+    collectAttachmentSummaries(value.media, summaries, seenUrls);
+  }
+}
 
-    if (!url) {
-      return [];
-    }
+function extractAttachmentUrl(attachment: Record<string, unknown>): string | undefined {
+  return firstString(
+    nestedString(attachment, "viewer_image", "uri"),
+    nestedString(attachment, "viewer_image", "url"),
+    nestedString(attachment, "media", "viewer_image", "uri"),
+    nestedString(attachment, "media", "viewer_image", "url"),
+    nestedString(attachment, "image", "uri"),
+    nestedString(attachment, "image", "url"),
+    nestedString(attachment, "media", "image", "uri"),
+    nestedString(attachment, "media", "image", "url"),
+    typeof attachment.thumbnail === "string" ? attachment.thumbnail : undefined,
+    nestedString(attachment, "thumbnail", "uri"),
+    nestedString(attachment, "thumbnail", "url"),
+    attachment.url,
+    attachment.href,
+    attachment.fullImageUrl,
+    attachment.fullPicture
+  );
+}
 
-    if (type.includes("video")) {
-      return [{ type: "video", url }];
-    }
-
-    return [{ type: "photo", url }];
-  });
+function isFacebookMediaSetUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return parsed.hostname.includes("facebook.com") && parsed.pathname.includes("/media/set/");
+  } catch {
+    return false;
+  }
 }
 
 function requiredIdentityPart(value: string | undefined, label: string): string {

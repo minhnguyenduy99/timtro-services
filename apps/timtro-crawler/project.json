@@ -8,7 +8,7 @@
       "executor": "nx:run-commands",
       "outputs": ["{projectRoot}/dist"],
       "options": {
-        "command": "TIMTRO_CRAWLER_HANDLER=crawl vite build && TIMTRO_CRAWLER_HANDLER=sanitize vite build",
+        "command": "TIMTRO_CRAWLER_HANDLER=crawl vite build && TIMTRO_CRAWLER_HANDLER=sanitize vite build && sam build",
         "cwd": "{projectRoot}"
       }
     },
@@ -49,25 +49,27 @@
         "cwd": "{projectRoot}"
       }
     },
-    "sam:local:crawl": {
+    "crawl:invoke": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "sam local invoke CrawlFunction --template template.yaml --env-vars env.dev.json --parameter-overrides \"$(node scripts/format-sam-parameter-overrides.mjs env.dev.json)\" --region ap-southeast-1 --event events/crawl-schedule.json",
+        "command": "sam local invoke CrawlFunction --template template.yaml --env-vars env.local.json --event events/crawl-schedule.json",
         "cwd": "{projectRoot}"
-      }
+      },
+      "dependsOn": ["crawl:watch"]
     },
-    "sam:local:sanitize": {
+    "sanitize:invoke": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "sam local invoke SanitizeFunction --template template.yaml --env-vars env.dev.json --parameter-overrides \"$(node scripts/format-sam-parameter-overrides.mjs env.dev.json)\" --region ap-southeast-1 --event events/sanitize-sqs.json",
+        "command": "sam local invoke SanitizeFunction --template template.yaml --env-vars env.local.json --event events/sanitize-sqs.json",
         "cwd": "{projectRoot}"
-      }
+      },
+      "dependsOn": ["sanitize:watch"]
     },
     "deploy": {
       "executor": "nx:run-commands",
       "dependsOn": ["test", "build"],
       "options": {
-        "command": "sam deploy --template template.yaml --no-fail-on-empty-changeset",
+        "command": "sam deploy --config-env dev --parameter-overrides \"$(node scripts/format-sam-parameter-overrides.mjs env.dev.json)\"",
         "cwd": "{projectRoot}"
       }
     }
