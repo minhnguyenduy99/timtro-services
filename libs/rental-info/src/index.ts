@@ -9,11 +9,14 @@ export {
 } from "./rental-info";
 
 export {
+  isKnownCityKey,
   isKnownDistrictKey,
+  listSupportedAreas,
   resolveCity,
   resolveDistrict,
   resolveRegionFields,
-  type RegionEntry
+  type RegionEntry,
+  type SupportedAreaCity
 } from "./region-mapping";
 
 export {
@@ -34,4 +37,4 @@ export {
   validateRentalInfoCandidates
 } from "./schemas";
 
-export { resolveAreaQueryToRegions } from "./area-query";
+export { resolveCityDistrictsToRegions } from "./area-query";

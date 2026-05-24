@@ -1,38 +1,37 @@
 import { buildRegion } from "./rental-info";
-import { isKnownDistrictKey, resolveDistrict, type RegionEntry } from "./region-mapping";
+import { isKnownCityKey, isKnownDistrictKey, resolveCity, resolveDistrict, type RegionEntry } from "./region-mapping";
 
-const DEFAULT_CITY = "ho_chi_minh";
-
-const AREA_QUERY_SPLIT = /[,;/|]+|\s+và\s+/i;
-
-export function resolveAreaQueryToRegions(areaQuery: string): {
+export function resolveCityDistrictsToRegions(city: string, district: string): {
   regions: string[];
   districts: RegionEntry[];
 } {
-  const trimmed = areaQuery.trim();
-  if (!trimmed) {
+  const cityEntry = resolveCity(city);
+  if (!cityEntry.key || !isKnownCityKey(cityEntry.key)) {
     return { regions: [], districts: [] };
   }
 
-  const tokens = trimmed
-    .split(AREA_QUERY_SPLIT)
+  const tokens = district
+    .split(",")
     .map((token) => token.trim())
     .filter(Boolean);
 
-  const queryTokens = tokens.length > 0 ? tokens : [trimmed];
+  if (tokens.length === 0) {
+    return { regions: [], districts: [] };
+  }
+
   const seenKeys = new Set<string>();
   const districts: RegionEntry[] = [];
   const regions: string[] = [];
 
-  for (const token of queryTokens) {
-    const district = resolveDistrict(token);
-    if (!district.key || !isKnownDistrictKey(district.key) || seenKeys.has(district.key)) {
+  for (const token of tokens) {
+    const districtEntry = resolveDistrict(token);
+    if (!districtEntry.key || !isKnownDistrictKey(districtEntry.key) || seenKeys.has(districtEntry.key)) {
       continue;
     }
 
-    seenKeys.add(district.key);
-    districts.push(district);
-    regions.push(buildRegion(DEFAULT_CITY, district.key));
+    seenKeys.add(districtEntry.key);
+    districts.push(districtEntry);
+    regions.push(buildRegion(cityEntry.key, districtEntry.key));
   }
 
   return { regions, districts };

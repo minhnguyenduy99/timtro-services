@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { UNKNOWN_RENTAL_PRICE, type RentalInfo } from "@timtro/rental-info";
 
 import type { RentalInfoRepository } from "../src/services/rental-info.repository";
-import { RentalSearchService } from "../src/services/rental-search.service";
+import { parseSearchSort, RentalSearchService } from "../src/services/rental-search.service";
 
 function makeListing(overrides: Partial<RentalInfo> = {}): RentalInfo {
   return {
@@ -28,6 +28,17 @@ function makeListing(overrides: Partial<RentalInfo> = {}): RentalInfo {
   };
 }
 
+describe("parseSearchSort", () => {
+  it("parses valid sort strings", () => {
+    expect(parseSearchSort("date|desc")).toEqual({ field: "date", order: "desc" });
+    expect(parseSearchSort("price|asc")).toEqual({ field: "price", order: "asc" });
+  });
+
+  it("rejects invalid sort strings", () => {
+    expect(() => parseSearchSort("date-desc")).toThrow(/Invalid sort format/);
+  });
+});
+
 describe("RentalSearchService", () => {
   it("returns matching listings filtered by max price for a single region", async () => {
     const repository: RentalInfoRepository = {
@@ -39,7 +50,8 @@ describe("RentalSearchService", () => {
 
     const service = new RentalSearchService(repository);
     const result = await service.search({
-      areaQuery: "Bình Thạnh",
+      city: "ho_chi_minh",
+      district: "binh_thanh",
       maxPriceVnd: 3_000_000,
       limit: 10,
       strictPriceFilter: false
@@ -48,6 +60,10 @@ describe("RentalSearchService", () => {
     expect(result.resolvedRegions).toEqual(["ho_chi_minh_binh_thanh"]);
     expect(result.results).toHaveLength(1);
     expect(result.results[0]?.id).toBe("fb_1");
+    expect(repository.queryByRegion).toHaveBeenCalledWith(
+      "ho_chi_minh_binh_thanh",
+      expect.objectContaining({ sort: { field: "date", order: "desc" } })
+    );
   });
 
   it("merges multi-region results sorted by postDate desc", async () => {
@@ -62,12 +78,111 @@ describe("RentalSearchService", () => {
 
     const service = new RentalSearchService(repository);
     const result = await service.search({
-      areaQuery: "Bình Thạnh, Thủ Đức",
+      city: "ho_chi_minh",
+      district: "binh_thanh,thu_duc",
       limit: 10,
       strictPriceFilter: false
     });
 
     expect(result.results.map((item) => item.id)).toEqual(["fb_new", "fb_old"]);
+  });
+
+  it("sorts by price ascending", async () => {
+    const repository: RentalInfoRepository = {
+      queryByRegion: vi.fn().mockResolvedValue([
+        makeListing({ id: "fb_high", price: 4_000_000 }),
+        makeListing({ id: "fb_low", price: 2_000_000 })
+      ])
+    };
+
+    const service = new RentalSearchService(repository);
+    const result = await service.search({
+      city: "ho_chi_minh",
+      district: "binh_thanh",
+      sort: { field: "price", order: "asc" },
+      limit: 10,
+      strictPriceFilter: false
+    });
+
+    expect(result.results.map((item) => item.id)).toEqual(["fb_low", "fb_high"]);
+  });
+
+  it("ignores non-positive dateRangeDays", async () => {
+    const repository: RentalInfoRepository = {
+      queryByRegion: vi.fn().mockResolvedValue([makeListing()])
+    };
+
+    const service = new RentalSearchService(repository);
+    await service.search({
+      city: "ho_chi_minh",
+      district: "binh_thanh",
+      dateRangeDays: -1,
+      limit: 10,
+      strictPriceFilter: false
+    });
+
+    expect(repository.queryByRegion).toHaveBeenCalledWith(
+      "ho_chi_minh_binh_thanh",
+      expect.not.objectContaining({ dateRangeCutoff: expect.any(String) })
+    );
+  });
+
+  it("passes date cutoff to repository for date sort", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-05-24T12:00:00.000Z"));
+
+    const repository: RentalInfoRepository = {
+      queryByRegion: vi.fn().mockResolvedValue([makeListing()])
+    };
+
+    const service = new RentalSearchService(repository);
+    await service.search({
+      city: "ho_chi_minh",
+      district: "binh_thanh",
+      dateRangeDays: 5,
+      sort: { field: "date", order: "desc" },
+      limit: 10,
+      strictPriceFilter: false
+    });
+
+    expect(repository.queryByRegion).toHaveBeenCalledWith(
+      "ho_chi_minh_binh_thanh",
+      expect.objectContaining({
+        dateRangeCutoff: "2026-05-19T12:00:00.000Z"
+      })
+    );
+
+    vi.useRealTimers();
+  });
+
+  it("applies date filter post-fetch when sorting by price", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-05-24T12:00:00.000Z"));
+
+    const repository: RentalInfoRepository = {
+      queryByRegion: vi.fn().mockResolvedValue([
+        makeListing({ id: "fb_recent", postDate: "2026-05-23T00:00:00.000Z" }),
+        makeListing({ id: "fb_old", postDate: "2026-05-10T00:00:00.000Z" })
+      ])
+    };
+
+    const service = new RentalSearchService(repository);
+    const result = await service.search({
+      city: "ho_chi_minh",
+      district: "binh_thanh",
+      dateRangeDays: 5,
+      sort: { field: "price", order: "asc" },
+      limit: 10,
+      strictPriceFilter: false
+    });
+
+    expect(result.results.map((item) => item.id)).toEqual(["fb_recent"]);
+    expect(repository.queryByRegion).toHaveBeenCalledWith(
+      "ho_chi_minh_binh_thanh",
+      expect.not.objectContaining({ dateRangeCutoff: expect.any(String) })
+    );
+
+    vi.useRealTimers();
   });
 
   it("returns empty results when no regions resolve", async () => {
@@ -77,7 +192,8 @@ describe("RentalSearchService", () => {
 
     const service = new RentalSearchService(repository);
     const result = await service.search({
-      areaQuery: "Unknown Street",
+      city: "hanoi",
+      district: "binh_thanh",
       limit: 10,
       strictPriceFilter: false
     });
@@ -93,7 +209,8 @@ describe("RentalSearchService", () => {
 
     const service = new RentalSearchService(repository);
     const result = await service.search({
-      areaQuery: "Bình Thạnh",
+      city: "ho_chi_minh",
+      district: "binh_thanh",
       maxPriceVnd: 3_000_000,
       limit: 10,
       strictPriceFilter: false
@@ -111,7 +228,8 @@ describe("RentalSearchService", () => {
 
     const service = new RentalSearchService(repository);
     const result = await service.search({
-      areaQuery: "Bình Thạnh",
+      city: "ho_chi_minh",
+      district: "binh_thanh",
       maxPriceVnd: 3_000_000,
       limit: 10,
       strictPriceFilter: true
@@ -135,7 +253,8 @@ describe("RentalSearchService", () => {
 
     const service = new RentalSearchService(repository);
     const result = await service.search({
-      areaQuery: "Bình Thạnh, Thủ Đức",
+      city: "ho_chi_minh",
+      district: "binh_thanh,thu_duc",
       limit: 2,
       strictPriceFilter: false
     });
@@ -153,7 +272,8 @@ describe("RentalSearchService", () => {
 
     await expect(
       service.search({
-        areaQuery: "Bình Thạnh",
+        city: "ho_chi_minh",
+        district: "binh_thanh",
         limit: 10,
         strictPriceFilter: false
       })

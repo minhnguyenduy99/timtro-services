@@ -72,6 +72,13 @@
         "command": "sam deploy --config-env dev --parameter-overrides \"$(node scripts/format-sam-parameter-overrides.mjs env.dev.json)\"",
         "cwd": "{projectRoot}"
       }
+    },
+    "migrate:rental-info-v2": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsx scripts/migrate-rental-info-v1-to-v2.ts",
+        "cwd": "{projectRoot}"
+      }
     }
   }
 }
