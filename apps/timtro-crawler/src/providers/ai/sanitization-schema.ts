@@ -80,7 +80,7 @@ function normalizeRentalCandidate(rawPost: RawRentalPost, rental: unknown): unkn
     ...rental,
     sourcePostId: firstNonEmptyString(rental.sourcePostId, rawPost.postId),
     postDate: coerceDateTimeString(rental.postDate, rawPost.postedAt),
-    timestamp: coerceDateTimeString(rental.timestamp, rawPost.postedAt ?? rawPost.updatedAt),
+    timestamp: resolveRentalTimestamp(rawPost, rental),
     originalLink: firstNonEmptyString(rental.originalLink, rawPost.url),
     attachments: normalizeAttachments(rental.attachments),
     description: rawPost.text ?? "",
@@ -118,6 +118,20 @@ function normalizeAttachments(value: unknown): unknown {
       type: mediaType.includes("video") ? "video" : "photo"
     };
   });
+}
+
+function resolveRentalTimestamp(rawPost: RawRentalPost, rental: Record<string, unknown>): string | undefined {
+  const sourceCommentId =
+    typeof rental.sourceCommentId === "string" && rental.sourceCommentId.trim().length > 0
+      ? rental.sourceCommentId.trim()
+      : undefined;
+
+  if (sourceCommentId) {
+    const comment = rawPost.comments.find((candidate) => candidate.commentId === sourceCommentId);
+    return coerceDateTimeString(comment?.timestamp, rawPost.postedAt ?? rawPost.updatedAt);
+  }
+
+  return coerceDateTimeString(undefined, rawPost.postedAt ?? rawPost.updatedAt);
 }
 
 function coerceDateTimeString(value: unknown, fallback?: string): string | undefined {

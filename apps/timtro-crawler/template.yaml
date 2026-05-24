@@ -120,13 +120,14 @@ Resources:
       Handler: crawl.handler
       CodeUri: dist/
       Description: Runs the scheduled Apify crawl and queues changed raw posts.
-      Timeout: 120
+      Timeout: 900
       Events:
         CrawlSchedule:
           Type: ScheduleV2
           Properties:
-            ScheduleExpression: rate(30 minutes)
-            Description: Run Timtro crawler every 30 minutes.
+            ScheduleExpression: cron(0 0 * * ? *)
+            ScheduleExpressionTimezone: Asia/Ho_Chi_Minh
+            Description: Run Timtro crawler daily at midnight ICT (UTC+7).
             FlexibleTimeWindow:
               Mode: "OFF"
       Policies:
