@@ -14,7 +14,8 @@
     "test": "nx test timtro-mcp",
     "test:lib": "nx test rental-info",
     "crawler:deploy": "nx deploy timtro-crawler --config-env dev",
-    "crawler:local": "nx sam:local:crawl timtro-crawler --outputStyle=dynamic-legacy"
+    "crawler:local": "nx sam:local:crawl timtro-crawler --outputStyle=dynamic-legacy",
+    "crawler:migrate-rental-info-v2": "nx migrate:rental-info-v2 timtro-crawler"
   },
   "engines": {
     "node": ">=20"

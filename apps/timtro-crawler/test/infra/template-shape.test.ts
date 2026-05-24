@@ -18,6 +18,9 @@ describe("SAM template shape", () => {
     expect(template).toContain("SanitizeFunction:");
     expect(template).toContain("RawRentalPostsTable:");
     expect(template).toContain("RentalInfoTable:");
+    expect(template).toContain("RentalInfoTableV2:");
+    expect(template).toContain("byPostDate");
+    expect(template).toContain("byPrice");
     expect(template).toContain("SanitizationQueue:");
     expect(template).toContain("SanitizationDeadLetterQueue:");
   });
@@ -33,9 +36,10 @@ describe("SAM template shape", () => {
     expect(template).not.toContain("SanitizationQueueName:");
     expect(template).toContain('TableName: !Sub "timtro-raw-rental-posts-${EnvironmentName}"');
     expect(template).toContain('TableName: !Sub "timtro-rental-info-${EnvironmentName}"');
+    expect(template).toContain('TableName: !Sub "timtro-rental-info-v2-${EnvironmentName}"');
     expect(template).toContain('QueueName: !Sub "timtro-sanitization-${EnvironmentName}"');
     expect(template).toContain("RAW_RENTAL_POSTS_TABLE_NAME: !Ref RawRentalPostsTable");
-    expect(template).toContain("RENTAL_INFO_TABLE_NAME: !Ref RentalInfoTable");
+    expect(template).toContain("RENTAL_INFO_TABLE_NAME: !Ref RentalInfoTableV2");
     expect(template).toContain("SANITIZATION_QUEUE_URL: !Ref SanitizationQueue");
   });
 

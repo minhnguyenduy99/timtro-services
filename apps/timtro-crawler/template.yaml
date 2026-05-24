@@ -43,7 +43,7 @@ Globals:
       Variables:
         ENVIRONMENT_NAME: !Ref EnvironmentName
         RAW_RENTAL_POSTS_TABLE_NAME: !Ref RawRentalPostsTable
-        RENTAL_INFO_TABLE_NAME: !Ref RentalInfoTable
+        RENTAL_INFO_TABLE_NAME: !Ref RentalInfoTableV2
         SANITIZATION_QUEUE_URL: !Ref SanitizationQueue
         APIFY_ACTOR_ID: !Ref ApifyActorId
         FACEBOOK_GROUP_URLS: !Join [",", !Ref FacebookGroupUrls]
@@ -93,6 +93,47 @@ Resources:
           KeyType: HASH
         - AttributeName: id
           KeyType: RANGE
+
+  RentalInfoTableV2:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "timtro-rental-info-v2-${EnvironmentName}"
+      BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+      AttributeDefinitions:
+        - AttributeName: region
+          AttributeType: S
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: postDate
+          AttributeType: S
+        - AttributeName: price
+          AttributeType: N
+      KeySchema:
+        - AttributeName: region
+          KeyType: HASH
+        - AttributeName: id
+          KeyType: RANGE
+      LocalSecondaryIndexes:
+        - IndexName: byPostDate
+          KeySchema:
+            - AttributeName: region
+              KeyType: HASH
+            - AttributeName: postDate
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+        - IndexName: byPrice
+          KeySchema:
+            - AttributeName: region
+              KeyType: HASH
+            - AttributeName: price
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
 
   SanitizationDeadLetterQueue:
     Type: AWS::SQS::Queue
@@ -171,7 +212,7 @@ Resources:
             - Effect: Allow
               Action:
                 - dynamodb:PutItem
-              Resource: !GetAtt RentalInfoTable.Arn
+              Resource: !GetAtt RentalInfoTableV2.Arn
 
   CrawlFunctionLogGroup:
     Type: AWS::Logs::LogGroup

@@ -7,7 +7,7 @@ AWS SAM service that crawls Facebook rental posts through Apify, stores raw evid
 Required non-secret environment variables:
 
 - `RAW_RENTAL_POSTS_TABLE_NAME`: DynamoDB table for raw Facebook post evidence.
-- `RENTAL_INFO_TABLE_NAME`: DynamoDB table for normalized rental info keyed by `region` and `id`.
+- `RENTAL_INFO_TABLE_NAME`: DynamoDB table for normalized rental info keyed by `region` and `id`. After v2 cutover this points to `timtro-rental-info-v2-{env}` (LSIs on `postDate` and `price` for MCP search).
 - `SANITIZATION_QUEUE_URL`: SQS queue URL for raw post sanitization messages.
 - `APIFY_ACTOR_ID`: Apify actor id for the Facebook group crawler.
 - `FACEBOOK_GROUP_URLS`: Comma-separated Facebook group URLs to crawl.
@@ -85,6 +85,32 @@ pnpm nx deploy timtro-crawler
 ```
 
 That Nx target runs `sam deploy --config-env dev` with parameters from `env.dev.json`. For prod, use `--config-env prod` and pass `--parameter-overrides` (or set `s3_bucket` in `samconfig.toml`).
+
+## Migrate rental info v1 → v2
+
+After deploying `RentalInfoTableV2`, backfill historical listings from the legacy table with:
+
+```bash
+# Dry run (scan + validate only)
+ENVIRONMENT_NAME=dev AWS_PROFILE=your-profile pnpm crawler:migrate-rental-info-v2 -- --dry-run
+
+# Copy all rows
+ENVIRONMENT_NAME=dev AWS_PROFILE=your-profile pnpm crawler:migrate-rental-info-v2
+```
+
+Defaults:
+
+- **Source:** `timtro-rental-info-{ENVIRONMENT_NAME}` (v1)
+- **Dest:** `timtro-rental-info-v2-{ENVIRONMENT_NAME}` (v2)
+
+Override with env vars or flags:
+
+- `RENTAL_INFO_SOURCE_TABLE_NAME` / `--source`
+- `RENTAL_INFO_TABLE_NAME` / `--dest`
+- `--limit N` — migrate only the first N scanned rows (testing)
+- `--dry-run` — no writes
+
+The script scans v1, validates each row with `@timtro/rental-info`, and batch-writes to v2 (`PutItem` semantics — safe to re-run). Invalid rows are skipped with a warning.
 
 ## Process Status
 

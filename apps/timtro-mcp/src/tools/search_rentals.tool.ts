@@ -1,10 +1,27 @@
 import { McpServer } from '@modelcontextprotocol/server';
 import * as z from 'zod';
 
+import { parseSearchSort } from '../services/rental-search.service';
 import { searchRentals } from '../search-rentals';
 
+const sortSchema = z
+  .string()
+  .regex(/^(date|price)\|(asc|desc)$/, 'sort phải có dạng "<field>|<order>" với field=date|price và order=asc|desc')
+  .optional()
+  .describe('Sắp xếp kết quả, ví dụ "date|desc" (mặc định), "price|asc".');
+
 const searchInputSchema = z.object({
-  area_query: z.string().describe('Vùng mục tiêu: ví dụ "Bình Thạnh", "Thủ Đức làng đại học", "Quận 10".'),
+  city: z.string().describe('Mã thành phố, ví dụ "ho_chi_minh". Gọi get_areas để xem danh sách.'),
+  district: z
+    .string()
+    .describe('Quận/huyện, phân tách bằng dấu phẩy, ví dụ "binh_thanh" hoặc "binh_thanh,thu_duc".'),
+  date_range: z
+    .number()
+    .int()
+    .positive()
+    .optional()
+    .describe('Chỉ lấy tin đăng trong N ngày gần nhất (tính từ thời điểm hiện tại).'),
+  sort: sortSchema,
   max_price_vnd: z.number().optional().describe('Giá thuê tối đa mỗi tháng (VND), ví dụ 3000000.'),
   limit: z.number().min(1).max(50).optional().describe('Số tin tối đa trả về (mặc định 12).'),
   strict_price_filter: z.boolean().optional().describe('Nếu true và có max_price_vnd: bỏ các tin không có giá rõ ràng. Mặc định false.')
@@ -42,14 +59,19 @@ export default function registerSearchRentalsTool(server: McpServer): void {
     {
       title: 'Tìm phòng trọ (DynamoDB TP.HCM)',
       description:
-        'Truy vấn RentalInfoTable trên DynamoDB theo khu vực (quận/huyện tại TP.HCM) và giá tối đa (VND/tháng). ' +
+        'Truy vấn RentalInfoTableV2 trên DynamoDB theo thành phố + quận/huyện, giá tối đa (VND/tháng), ' +
+        'khoảng ngày đăng (date_range) và sắp xếp (sort). Gọi get_areas trước để lấy city/district hợp lệ. ' +
+        'Bảng v2 dùng LSI byPostDate/byPrice; date_range khi sort=price được lọc sau truy vấn. ' +
         'Yêu cầu biến môi trường RENTAL_INFO_TABLE_NAME và AWS credentials.',
       inputSchema: searchInputSchema,
       outputSchema: searchOutputSchema
     },
-    async ({ area_query, max_price_vnd, limit, strict_price_filter }) => {
+    async ({ city, district, date_range, sort, max_price_vnd, limit, strict_price_filter }) => {
       const result = await searchRentals({
-        areaQuery: area_query,
+        city,
+        district,
+        dateRangeDays: date_range,
+        sort: parseSearchSort(sort ?? 'date|desc'),
         maxPriceVnd: max_price_vnd,
         limit: limit ?? 12,
         strictPriceFilter: strict_price_filter ?? false

@@ -11,13 +11,13 @@ flowchart LR
   Crawl --> Queue[SanitizationQueue]
   Queue --> Sanitize[SanitizeFunction]
   Sanitize --> RawTable
-  Sanitize --> InfoTable[(RentalInfoTable)]
+  Sanitize --> InfoTable[(RentalInfoTableV2)]
   InfoTable --> MCP[Timtro MCP / search]
 ```
 
 1. **Crawl** — Apify scrapes Facebook group posts. New or changed posts are written to `timtro-raw-rental-posts-{env}` and enqueued for sanitization.
-2. **Sanitize** — Gemini extracts structured rental fields from each raw post. Valid records are written to `timtro-rental-info-{env}`; the raw post is marked `completed`.
-3. **Search** — Downstream services (e.g. Timtro MCP) read sanitized rental info for district/price search.
+2. **Sanitize** — Gemini extracts structured rental fields from each raw post. Valid records are written to `timtro-rental-info-v2-{env}`; the raw post is marked `completed`.
+3. **Search** — Downstream services (e.g. Timtro MCP) read sanitized rental info from v2 via LSI queries for district/price/date search.
 
 ---
 
@@ -25,15 +25,16 @@ flowchart LR
 
 Both tables use on-demand billing, server-side encryption, and point-in-time recovery.
 
-| Table | Name pattern | Partition key | Sort key | TTL |
-|-------|--------------|---------------|----------|-----|
-| Raw rental posts | `timtro-raw-rental-posts-${EnvironmentName}` | `id` (S) | — | `expiresAt` (30-day retention) |
-| Rental info | `timtro-rental-info-${EnvironmentName}` | `region` (S) | `id` (S) | — |
+| Table | Name pattern | Partition key | Sort key | Indexes | TTL |
+|-------|--------------|---------------|----------|---------|-----|
+| Raw rental posts | `timtro-raw-rental-posts-${EnvironmentName}` | `id` (S) | — | — | `expiresAt` (30-day retention) |
+| Rental info (legacy v1) | `timtro-rental-info-${EnvironmentName}` | `region` (S) | `id` (S) | — | — |
+| Rental info (active v2) | `timtro-rental-info-v2-${EnvironmentName}` | `region` (S) | `id` (S) | LSI `byPostDate`, LSI `byPrice` | — |
 
 Environment variables wired from the template:
 
 - `RAW_RENTAL_POSTS_TABLE_NAME`
-- `RENTAL_INFO_TABLE_NAME`
+- `RENTAL_INFO_TABLE_NAME` — points to **RentalInfoTableV2** after cutover (`timtro-rental-info-v2-{env}`)
 
 ### RawRentalPostsTable
 
@@ -52,18 +53,32 @@ Single-item access by raw post id. Items expire automatically via TTL on `expire
 - `markCompleted`: requires matching `contentHash` and `processStatus` in `pending` or `fail`.
 - `markFailed`: requires matching `contentHash`.
 
-### RentalInfoTable
+### RentalInfoTable (legacy v1)
 
-Composite key supports querying all listings in a city/district **region** (`region` = `{city}_{district}`).
+Retained in the SAM stack for CloudFormation compatibility; no longer referenced by env/IAM after v2 cutover. Same key schema as v2 base table (no LSIs).
+
+### RentalInfoTableV2
+
+Composite key supports querying all listings in a city/district **region** (`region` = `{city}_{district}`). Local secondary indexes enable sort/filter by listing date and price without application-layer over-fetch.
 
 **Access patterns**
 
-| Operation | Key | Used by |
-|-----------|-----|---------|
-| Put | `region` + `id` | SanitizeFunction |
-| Query (by region) | `region` | Timtro MCP `search_rentals` |
+| Operation | Key / Index | Used by |
+|-----------|-------------|---------|
+| Put | `region` + `id` (base table) | SanitizeFunction |
+| Query by region, sorted by date | `region` + LSI `byPostDate` | Timtro MCP `search_rentals` (`sort=date\|*`) |
+| Query by region, sorted by price | `region` + LSI `byPrice` | Timtro MCP `search_rentals` (`sort=price\|*`) |
 
-There is no GSI today. Listing lookup by `sourcePostId` requires a query on `region` or a separate index if added later.
+**LSI details**
+
+| Index | Sort key | Type | Notes |
+|-------|----------|------|-------|
+| `byPostDate` | `postDate` | S (ISO 8601) | Lexicographic order = chronological; `date_range` uses `FilterExpression postDate >= :cutoff` |
+| `byPrice` | `price` | N (VND/month) | Unknown price (`-1`) excluded via `FilterExpression price > 0` on price-index queries |
+
+There is no GSI. Listing lookup by `sourcePostId` requires a query on `region` or a separate index if added later.
+
+**Cutover note:** After `sam deploy`, v2 is empty until the next crawl/sanitize cycle. v1 data is not auto-migrated. To backfill historical listings, run the one-off migration script (see crawler README).
 
 ---
 

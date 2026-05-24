@@ -3,6 +3,12 @@ export type RegionEntry = {
   label: string;
 };
 
+export type SupportedAreaCity = {
+  city: string;
+  cityLabel: string;
+  districtList: Array<{ district: string; districtLabel: string }>;
+};
+
 const CITY_ENTRIES: Array<{ entry: RegionEntry; aliases: string[] }> = [
   {
     entry: { key: "ho_chi_minh", label: "Hồ Chí Minh" },
@@ -92,10 +98,26 @@ const DISTRICT_ENTRIES: Array<{ entry: RegionEntry; aliases: string[] }> = [
 const cityLookup = buildLookup(CITY_ENTRIES);
 const districtLookup = buildLookup(DISTRICT_ENTRIES);
 
+const KNOWN_CITY_KEYS = new Set(CITY_ENTRIES.map(({ entry }) => entry.key));
 const KNOWN_DISTRICT_KEYS = new Set(DISTRICT_ENTRIES.map(({ entry }) => entry.key));
+
+export function isKnownCityKey(key: string): boolean {
+  return KNOWN_CITY_KEYS.has(key);
+}
 
 export function isKnownDistrictKey(key: string): boolean {
   return KNOWN_DISTRICT_KEYS.has(key);
+}
+
+export function listSupportedAreas(): SupportedAreaCity[] {
+  return CITY_ENTRIES.map(({ entry }) => ({
+    city: entry.key,
+    cityLabel: entry.label,
+    districtList: DISTRICT_ENTRIES.map(({ entry: districtEntry }) => ({
+      district: districtEntry.key,
+      districtLabel: districtEntry.label
+    }))
+  }));
 }
 
 export function normalizeRegionPart(value: string): string {

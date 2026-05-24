@@ -80,7 +80,6 @@ function buildPrompt(rawPost: RawRentalPost): string {
     originalLink: redactUrl(rawPost.url),
     postDate: rawPost.postedAt,
     text: rawPost.text,
-    attachments: rawPost.attachments.map((attachment) => ({ ...attachment, url: redactUrl(attachment.url) })),
     comments: rawPost.comments.map((comment) => ({
       sourceCommentId: comment.commentId,
       text: comment.text,
@@ -92,7 +91,7 @@ function buildPrompt(rawPost: RawRentalPost): string {
   return [
     "Extract Vietnamese rental listing information from this Facebook post evidence.",
     "Return JSON only with classification=rental and rentals[], or classification=non_rental and rentals=[].",
-    "Each rental must include sourcePostId, address, city, district, title, postDate, timestamp, originalLink, attachments, and price when a monthly rent is mentioned.",
+    "Each rental must include sourcePostId, address, city, district, title, postDate, timestamp, originalLink, and price when a monthly rent is mentioned.",
     "Use city and district as human-readable Vietnamese location labels only (for example city=Hồ Chí Minh, district=Quận 1 or Bình Thạnh). Do not invent alternate spellings or English keys.",
     "Use price as the monthly rent in whole VND divisible by 1000 (for example 3200000 for 3.2 triệu). Never use phone numbers as price.",
     "If no monthly rent can be confidently extracted, set price to -1.",
