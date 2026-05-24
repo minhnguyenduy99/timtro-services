@@ -4,22 +4,6 @@
   "projectType": "application",
   "sourceRoot": "apps/timtro-mcp/src",
   "targets": {
-    "build": {
-      "executor": "nx:run-commands",
-      "outputs": ["{projectRoot}/dist"],
-      "options": {
-        "command": "vite build",
-        "cwd": "{projectRoot}"
-      }
-    },
-    "build:watch": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "vite build --watch",
-        "cwd": "{projectRoot}"
-      },
-      "continuous": true
-    },
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
@@ -27,26 +11,17 @@
         "cwd": "{projectRoot}"
       }
     },
-    "serve": {
+    "dev:http": {
       "executor": "nx:run-commands",
-      "dependsOn": ["build"],
       "options": {
-        "command": "node dist/server.mjs",
+        "command": "vercel dev",
         "cwd": "{projectRoot}"
-      }
-    },
-    "dev": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsx apps/timtro-mcp/src/server.ts",
-        "cwd": "{workspaceRoot}"
       }
     },
     "smoke": {
       "executor": "nx:run-commands",
-      "dependsOn": ["build"],
       "options": {
-        "command": "node scripts/smoke-call.mjs",
+        "command": "node scripts/smoke-http.mjs",
         "cwd": "{workspaceRoot}"
       }
     },
@@ -57,12 +32,19 @@
         "cwd": "{projectRoot}"
       }
     },
-    "inspector": {
+    "sam:validate": {
       "executor": "nx:run-commands",
-      "dependsOn": ["build:watch"],
       "options": {
-        "command": "mcp-inspector node {projectRoot}/dist/server.mjs",
-        "cwd": "{workspaceRoot}"
+        "command": "sam validate --lint",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "deploy:iam": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["test", "sam:validate"],
+      "options": {
+        "command": "sam deploy --config-env dev --parameter-overrides \"$(node scripts/format-sam-parameter-overrides.mjs env.example.json)\"",
+        "cwd": "{projectRoot}"
       }
     }
   }

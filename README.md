@@ -1,51 +1,36 @@
 # timtro-mcp
 
-MCP server (stdio) đọc cache phòng trọ TP.HCM từ file JSON — phù hợp pipeline scraper Apify + `cache_rentals.json`.
+Nx + pnpm monorepo for **Timtro MCP** (Streamable HTTP on Vercel) and **timtro-crawler** (AWS SAM ingestion pipeline).
 
-## Chạy
+## timtro-mcp
+
+Remote MCP server exposing rental search tools over **Streamable HTTP** at `/api/mcp`. Data comes from DynamoDB `RentalInfoTableV2` (written by the crawler).
 
 ```bash
 corepack enable
 pnpm install
-pnpm build
-pnpm start
+pnpm dev          # vercel dev in apps/timtro-mcp
+pnpm smoke        # HTTP smoke against localhost:3000
+pnpm test
 ```
 
-Gọi thử nhanh (spawn server riêng, không cần terminal đang `pnpm start`): `pnpm smoke`.
+See [apps/timtro-mcp/README.md](apps/timtro-mcp/README.md) for deploy sequence (SAM IAM role → Vercel OIDC → Cursor config).
 
-Biến môi trường tùy chọn: `TIMTRO_CACHE_PATH` — đường dẫn tuyệt đối hoặc tương đối tới file cache (mặc định: `./cache_rentals.json` theo thư mục làm việc của process).
+## timtro-crawler
 
-## Cursor / MCP client
+AWS SAM stack: Apify crawl → SQS → Gemini sanitize → DynamoDB.
 
-Thêm server (ví dụ trong cấu hình MCP của Cursor), trỏ tới `dist/apps/timtro-mcp/server.js` sau khi `pnpm build`:
-
-```json
-{
-  "mcpServers": {
-    "timtro": {
-      "command": "node",
-      "args": ["/ABS/PATH/TO/timtro-mcp/dist/apps/timtro-mcp/server.js"],
-      "env": {
-        "TIMTRO_CACHE_PATH": "/ABS/PATH/TO/cache_rentals.json"
-      }
-    }
-  }
-}
+```bash
+pnpm crawler:deploy
+pnpm exec nx test timtro-crawler
 ```
 
-## Tools
+Details: [apps/timtro-crawler/README.md](apps/timtro-crawler/README.md).
 
-| Tool | Mô tả |
-|------|--------|
-| `search_rentals` | Lọc theo `area_query`, tùy chọn `max_price_vnd`, `limit`, `strict_price_filter`, `cache_path`. |
-| `rentals_cache_stats` | Số bản ghi + đường dẫn cache đang dùng. |
+## Workspace layout
 
-Định dạng cache: mảng bản ghi hoặc `{ "updated_at"?: string, "items": [...] }`. Mỗi bản ghi nên có ít nhất một trường text (`text`, `body`, `content`, …).
-
-Yêu cầu Node **≥ 20**. `@cfworker/json-schema` là peer của `@modelcontextprotocol/server` (bản alpha hiện **bắt buộc** cài để `pnpm start` chạy được — đã có trong app package).
-
-## Monorepo
-
-Workspace dùng Nx + pnpm. App MCP nằm ở `apps/timtro-mcp`; các lệnh root (`pnpm build`, `pnpm dev`, `pnpm smoke`) chạy qua Nx target của project `timtro-mcp`.
-
-App crawler mới nằm ở `apps/timtro-crawler`. Service này dùng AWS SAM, Apify, SQS, DynamoDB và Gemini để ingest/sanitize dữ liệu phòng trọ; chạy kiểm thử riêng bằng `corepack pnpm exec nx test timtro-crawler`. Xem `apps/timtro-crawler/README.md` để biết cấu hình, local SAM events, replay và CI/CD.
+| Path | Role |
+|------|------|
+| `apps/timtro-mcp` | Vercel MCP server + SAM IAM stack |
+| `apps/timtro-crawler` | Crawler Lambdas + DynamoDB tables |
+| `libs/rental-info` | Shared schemas and area catalog |
