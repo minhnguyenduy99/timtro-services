@@ -6,13 +6,11 @@
   "type": "module",
   "packageManager": "pnpm@11.1.3",
   "scripts": {
-    "build": "nx build timtro-mcp",
-    "start": "node apps/timtro-mcp/dist/server.mjs",
-    "dev": "nx dev timtro-mcp",
-    "inspector": "nx inspector timtro-mcp",
+    "dev": "nx dev:http timtro-mcp",
     "smoke": "nx smoke timtro-mcp",
     "test": "nx test timtro-mcp",
     "test:lib": "nx test rental-info",
+    "mcp:deploy:iam": "nx deploy:iam timtro-mcp",
     "crawler:deploy": "nx deploy timtro-crawler --config-env dev",
     "crawler:local": "nx sam:local:crawl timtro-crawler --outputStyle=dynamic-legacy",
     "crawler:migrate-rental-info-v2": "nx migrate:rental-info-v2 timtro-crawler"

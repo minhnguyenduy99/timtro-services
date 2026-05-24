@@ -3,6 +3,8 @@ import { DynamoDBDocumentClient, QueryCommand } from "@aws-sdk/lib-dynamodb";
 
 import { rentalInfoSchema, type RentalInfo } from "@timtro/rental-info";
 
+import { resolveAwsClientConfig } from "../aws/credentials.js";
+
 export type SortField = "date" | "price";
 export type SortOrder = "asc" | "desc";
 
@@ -113,12 +115,28 @@ function buildQueryPlan(options: RentalInfoQueryOptions): QueryPlan {
   };
 }
 
+let documentClient: DynamoDBDocumentClient | undefined;
+
 export function createDocumentClient(config: { region?: string } = {}): DynamoDBDocumentClient {
-  return DynamoDBDocumentClient.from(new DynamoDBClient(config), {
-    marshallOptions: {
-      removeUndefinedValues: true
-    }
-  });
+  if (!documentClient) {
+    documentClient = DynamoDBDocumentClient.from(
+      new DynamoDBClient({
+        ...resolveAwsClientConfig(),
+        ...config
+      }),
+      {
+        marshallOptions: {
+          removeUndefinedValues: true
+        }
+      }
+    );
+  }
+
+  return documentClient;
+}
+
+export function resetDocumentClientForTests(): void {
+  documentClient = undefined;
 }
 
 export function createRentalInfoRepository(): DynamoRentalInfoRepository {

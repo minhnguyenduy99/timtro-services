@@ -1,0 +1,96 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Timtro MCP IAM role for Vercel OIDC DynamoDB read access.
+
+Parameters:
+  EnvironmentName:
+    Type: String
+    Default: dev
+  RentalInfoTableName:
+    Type: String
+    Default: ""
+    Description: Override table name; defaults to timtro-rental-info-v2-{EnvironmentName}.
+  VercelTeamSlug:
+    Type: String
+    Description: Vercel team slug used in the OIDC issuer URL (oidc.vercel.com/{slug}).
+  VercelProjectName:
+    Type: String
+    Description: Vercel project name used in the OIDC sub claim.
+
+Conditions:
+  HasCustomTableName: !Not [!Equals [!Ref RentalInfoTableName, ""]]
+
+Resources:
+  McpDynamoDbReadRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "timtro-mcp-read-${EnvironmentName}"
+      AssumeRolePolicyDocument:
+        Fn::Sub:
+          - |
+            {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Principal": {
+                    "Federated": "arn:aws:iam::${AWS::AccountId}:oidc-provider/oidc.vercel.com/${VercelTeamSlug}"
+                  },
+                  "Action": "sts:AssumeRoleWithWebIdentity",
+                  "Condition": {
+                    "StringEquals": {
+                      "oidc.vercel.com/${VercelTeamSlug}:aud": "https://vercel.com/${VercelTeamSlug}",
+                      "oidc.vercel.com/${VercelTeamSlug}:sub": "owner:${VercelTeamSlug}:project:${VercelProjectName}:environment:production"
+                    }
+                  }
+                }
+              ]
+            }
+          - VercelTeamSlug: !Ref VercelTeamSlug
+            VercelProjectName: !Ref VercelProjectName
+      Policies:
+        - PolicyName: McpDynamoDbReadAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:Query
+                  - dynamodb:DescribeTable
+                Resource:
+                  - !Sub
+                    - "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableName}"
+                    - TableName: !If
+                        - HasCustomTableName
+                        - !Ref RentalInfoTableName
+                        - !Sub "timtro-rental-info-v2-${EnvironmentName}"
+                  - !Sub
+                    - "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableName}/index/*"
+                    - TableName: !If
+                        - HasCustomTableName
+                        - !Ref RentalInfoTableName
+                        - !Sub "timtro-rental-info-v2-${EnvironmentName}"
+              - Effect: Deny
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:BatchWriteItem
+                Resource:
+                  - !Sub
+                    - "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableName}"
+                    - TableName: !If
+                        - HasCustomTableName
+                        - !Ref RentalInfoTableName
+                        - !Sub "timtro-rental-info-v2-${EnvironmentName}"
+
+Outputs:
+  McpReadRoleArn:
+    Description: IAM role ARN for Vercel OIDC assume-role (set as AWS_ROLE_ARN in Vercel).
+    Value: !GetAtt McpDynamoDbReadRole.Arn
+  RentalInfoTableName:
+    Description: DynamoDB table name resolved for this stack.
+    Value: !If
+      - HasCustomTableName
+      - !Ref RentalInfoTableName
+      - !Sub "timtro-rental-info-v2-${EnvironmentName}"
