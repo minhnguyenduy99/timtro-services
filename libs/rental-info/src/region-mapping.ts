@@ -1,6 +1,4 @@
-import { normalizeRegionPart } from "./region-mapping";
-
-type RegionEntry = {
+export type RegionEntry = {
   key: string;
   label: string;
 };
@@ -74,7 +72,14 @@ const DISTRICT_ENTRIES: Array<{ entry: RegionEntry; aliases: string[] }> = [
       "linh xuan",
       "đông hòa",
       "dong hoa",
-      "thu_duc"
+      "thu_duc",
+      "đại học quốc gia",
+      "dai hoc quoc gia",
+      "đhqg",
+      "làng đại học",
+      "lang dai hoc",
+      "khu làng đại học",
+      "khu lang dai hoc"
     ]
   },
   { entry: { key: "hoc_mon", label: "Hóc Môn" }, aliases: ["hoc mon", "hóc môn", "hoc_mon"] },
@@ -86,6 +91,12 @@ const DISTRICT_ENTRIES: Array<{ entry: RegionEntry; aliases: string[] }> = [
 
 const cityLookup = buildLookup(CITY_ENTRIES);
 const districtLookup = buildLookup(DISTRICT_ENTRIES);
+
+const KNOWN_DISTRICT_KEYS = new Set(DISTRICT_ENTRIES.map(({ entry }) => entry.key));
+
+export function isKnownDistrictKey(key: string): boolean {
+  return KNOWN_DISTRICT_KEYS.has(key);
+}
 
 export function normalizeRegionPart(value: string): string {
   return value

@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 
-import type { RentalAttachment } from "./rental-info";
+import type { RentalAttachment } from "@timtro/rental-info";
 
 export type ProcessStatus = "pending" | "completed" | "fail";
 

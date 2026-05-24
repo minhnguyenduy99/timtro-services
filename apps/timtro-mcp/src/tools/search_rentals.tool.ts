@@ -1,34 +1,37 @@
 import { McpServer } from '@modelcontextprotocol/server';
 import * as z from 'zod';
 
-import { loadCache, resolveCachePath } from '../cache-loader.js';
-import { searchRentals } from '../search-rentals.js';
+import { searchRentals } from '../search-rentals';
 
 const searchInputSchema = z.object({
   area_query: z.string().describe('Vùng mục tiêu: ví dụ "Bình Thạnh", "Thủ Đức làng đại học", "Quận 10".'),
   max_price_vnd: z.number().optional().describe('Giá thuê tối đa mỗi tháng (VND), ví dụ 3000000.'),
   limit: z.number().min(1).max(50).optional().describe('Số tin tối đa trả về (mặc định 12).'),
-  cache_path: z.string().optional().describe('Đường dẫn tùy chọn tới file JSON cache; mặc định TIMTRO_CACHE_PATH hoặc ./cache_rentals.json.'),
-  strict_price_filter: z.boolean().optional().describe('Nếu true và có max_price_vnd: bỏ các tin không trích được giá thuê rõ ràng. Mặc định false.')
+  strict_price_filter: z.boolean().optional().describe('Nếu true và có max_price_vnd: bỏ các tin không có giá rõ ràng. Mặc định false.')
 });
 
 const searchOutputSchema = z.object({
-  cache_path: z.string(),
+  resolved_regions: z.array(z.string()),
   count: z.number(),
   results: z.array(
     z.object({
-      id: z.string().optional(),
-      url: z.string().optional(),
-      source: z.string().optional(),
-      district_matches: z.array(z.string()),
-      rent: z
-        .object({
-          amount_vnd: z.number(),
-          confidence: z.enum(['high', 'medium', 'low']),
-          matched_snippet: z.string()
+      id: z.string(),
+      title: z.string(),
+      description: z.string(),
+      address: z.string(),
+      city_label: z.string(),
+      district_label: z.string(),
+      price_vnd: z.number().describe('Giá thuê VND/tháng; -1 nếu chưa xác định.'),
+      price_unknown: z.boolean(),
+      original_link: z.string(),
+      post_date: z.string(),
+      attachments: z.array(
+        z.object({
+          type: z.enum(['photo', 'video']),
+          url: z.string()
         })
-        .optional(),
-      text_preview: z.string()
+      ),
+      source: z.literal('fb')
     })
   )
 });
@@ -37,17 +40,15 @@ export default function registerSearchRentalsTool(server: McpServer): void {
   server.registerTool(
     'search_rentals',
     {
-      title: 'Tìm phòng trọ (cache TP.HCM)',
+      title: 'Tìm phòng trọ (DynamoDB TP.HCM)',
       description:
-        'Lọc `cache_rentals.json` theo khu vực (quận/huyện/đường/làng đại học tại TP.HCM) và giá tối đa (VND/tháng). ' +
-        'Không gọi scraper; chỉ đọc cache cục bộ.',
+        'Truy vấn RentalInfoTable trên DynamoDB theo khu vực (quận/huyện tại TP.HCM) và giá tối đa (VND/tháng). ' +
+        'Yêu cầu biến môi trường RENTAL_INFO_TABLE_NAME và AWS credentials.',
       inputSchema: searchInputSchema,
       outputSchema: searchOutputSchema
     },
-    async ({ area_query, max_price_vnd, limit, cache_path, strict_price_filter }) => {
-      const resolvedPath = resolveCachePath(cache_path);
-      const { items } = await loadCache(resolvedPath);
-      const hits = searchRentals(items, {
+    async ({ area_query, max_price_vnd, limit, strict_price_filter }) => {
+      const result = await searchRentals({
         areaQuery: area_query,
         maxPriceVnd: max_price_vnd,
         limit: limit ?? 12,
@@ -55,21 +56,21 @@ export default function registerSearchRentalsTool(server: McpServer): void {
       });
 
       const output = {
-        cache_path: resolvedPath,
-        count: hits.length,
-        results: hits.map((h) => ({
-          id: h.id,
-          url: h.url,
-          source: h.source,
-          district_matches: h.districtMatches,
-          rent: h.rent
-            ? {
-                amount_vnd: h.rent.amountVnd,
-                confidence: h.rent.confidence,
-                matched_snippet: h.rent.matchedSnippet
-              }
-            : undefined,
-          text_preview: h.textPreview
+        resolved_regions: result.resolvedRegions,
+        count: result.count,
+        results: result.results.map((item) => ({
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          address: item.address,
+          city_label: item.cityLabel,
+          district_label: item.districtLabel,
+          price_vnd: item.priceVnd,
+          price_unknown: item.priceUnknown,
+          original_link: item.originalLink,
+          post_date: item.postDate,
+          attachments: item.attachments,
+          source: item.source
         }))
       };
 

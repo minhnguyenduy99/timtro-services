@@ -2,7 +2,7 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { SendMessageCommand, SQSClient } from "@aws-sdk/client-sqs";
 import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 
-import type { RentalInfo } from "../domain/rental-info";
+import type { RentalInfo } from "@timtro/rental-info";
 import { isRawRentalPost, type RawRentalPost } from "../domain/raw-rental-post";
 import type { SanitizationMessage } from "../domain/sanitization-message";
 

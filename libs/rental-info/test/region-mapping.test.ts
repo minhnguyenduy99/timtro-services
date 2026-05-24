@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { resolveCity, resolveDistrict, resolveRegionFields } from "../../src/domain/region-mapping";
+import { resolveCity, resolveDistrict, resolveRegionFields } from "../src/region-mapping";
 
 describe("region mapping", () => {
   it("maps city aliases to a single canonical key and label", () => {

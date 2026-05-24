@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { mapApifyPostToRawPost } from "../../../src/domain/raw-rental-post";
-import { UNKNOWN_RENTAL_PRICE } from "../../../src/domain/rent-price";
+import { UNKNOWN_RENTAL_PRICE } from "@timtro/rental-info";
 import { DomainValidationError } from "../../../src/domain/schemas";
 import {
   normalizeAiSanitizationResponse,

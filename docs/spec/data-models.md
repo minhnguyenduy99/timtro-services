@@ -61,7 +61,7 @@ Composite key supports querying all listings in a city/district **region** (`reg
 | Operation | Key | Used by |
 |-----------|-----|---------|
 | Put | `region` + `id` | SanitizeFunction |
-| Query (by region) | `region` | Future search / export jobs |
+| Query (by region) | `region` | Timtro MCP `search_rentals` |
 
 There is no GSI today. Listing lookup by `sourcePostId` requires a query on `region` or a separate index if added later.
 

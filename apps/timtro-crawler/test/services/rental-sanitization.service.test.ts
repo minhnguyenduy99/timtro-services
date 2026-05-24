@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { mapApifyPostToRawPost, type ProcessError, type RawRentalPost } from "../../src/domain/raw-rental-post";
-import type { RentalInfo } from "../../src/domain/rental-info";
+import type { RentalInfo } from "@timtro/rental-info";
 import { DomainValidationError } from "../../src/domain/schemas";
 import type { SanitizationMessage } from "../../src/domain/sanitization-message";
 import { AiProviderError, type AiSanitizationResult, type AiSanitizerProvider } from "../../src/providers/ai/ai-sanitizer.provider";

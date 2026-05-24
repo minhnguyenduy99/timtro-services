@@ -1,6 +1,9 @@
 /**
  * Gọi thử timtro MCP qua stdio (initialize → initialized → tools/call).
  * Chạy: pnpm smoke
+ *
+ * Yêu cầu env: RENTAL_INFO_TABLE_NAME, AWS credentials (AWS_PROFILE hoặc access keys).
+ * CI có thể bỏ qua nếu không có AWS — lệnh search_rentals sẽ trả lỗi tool.
  */
 import { spawn } from 'node:child_process';
 import path from 'node:path';
@@ -32,15 +35,6 @@ const linesToSend = [
     {
         jsonrpc: '2.0',
         id: 2,
-        method: 'tools/call',
-        params: {
-            name: 'rentals_cache_stats',
-            arguments: {}
-        }
-    },
-    {
-        jsonrpc: '2.0',
-        id: 3,
         method: 'tools/call',
         params: {
             name: 'search_rentals',

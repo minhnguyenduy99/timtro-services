@@ -1,0 +1,18 @@
+{
+  "name": "@timtro/rental-info",
+  "version": "1.0.0",
+  "description": "Shared rental domain types, validation, and region mapping for Timtro",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "dependencies": {
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.6"
+  }
+}

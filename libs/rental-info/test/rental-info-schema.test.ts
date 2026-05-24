@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { DomainValidationError, validateRentalInfoCandidate } from "../../src/domain/schemas";
-import { UNKNOWN_RENTAL_PRICE } from "../../src/domain/rent-price";
+import { DomainValidationError, validateRentalInfoCandidate } from "../src/schemas";
+import { UNKNOWN_RENTAL_PRICE } from "../src/rent-price";
 
 const validCandidate = {
   sourcePostId: "4675629119370956",

@@ -1,133 +1,96 @@
-import { DISTRICT_ALIAS_GROUPS } from '../constants.js';
-import { estimateMonthlyRent } from '../rent-extract.js';
-import type { SearchParams } from '../search-rentals.js';
-import type { RentalRecord, SearchHit } from '../types.js';
+import {
+  resolveAreaQueryToRegions,
+  UNKNOWN_RENTAL_PRICE,
+  type RentalInfo
+} from "@timtro/rental-info";
+
+import type { RentalInfoRepository } from "./rental-info.repository";
+
+export type SearchParams = {
+  areaQuery: string;
+  maxPriceVnd?: number;
+  limit: number;
+  strictPriceFilter: boolean;
+};
+
+export type SearchResultItem = {
+  id: string;
+  title: string;
+  description: string;
+  address: string;
+  cityLabel: string;
+  districtLabel: string;
+  priceVnd: number;
+  priceUnknown: boolean;
+  originalLink: string;
+  postDate: string;
+  attachments: RentalInfo["attachments"];
+  source: RentalInfo["source"];
+};
+
+export type SearchResult = {
+  resolvedRegions: string[];
+  count: number;
+  results: SearchResultItem[];
+};
 
 export class RentalSearchService {
-  searchRentals(items: RentalRecord[], params: SearchParams): SearchHit[] {
+  constructor(private readonly repository: RentalInfoRepository) {}
+
+  async search(params: SearchParams): Promise<SearchResult> {
     const limit = Math.min(Math.max(params.limit, 1), 50);
-    const hits: SearchHit[] = [];
+    const { regions } = resolveAreaQueryToRegions(params.areaQuery);
 
-    for (const row of items) {
-      const fullText = this.getFullText(row);
-      if (!fullText) continue;
-
-      if (!this.recordMatchesArea(params.areaQuery, fullText, row.district_hint)) {
-        continue;
-      }
-
-      const rent = estimateMonthlyRent(fullText);
-      if (params.maxPriceVnd !== undefined && rent) {
-        if (rent.amountVnd > params.maxPriceVnd) continue;
-      }
-      if (params.maxPriceVnd !== undefined && !rent && params.strictPriceFilter) {
-        continue;
-      }
-
-      const districtMatches = this.districtsFoundInListing(fullText, row.district_hint);
-
-      const preview = fullText.length > 400 ? `${fullText.slice(0, 400)}…` : fullText;
-
-      hits.push({
-        id: row.id,
-        url: row.url,
-        source: row.source,
-        districtMatches,
-        rent,
-        textPreview: preview,
-        fullText
-      });
-
-      if (hits.length >= limit) break;
+    if (regions.length === 0) {
+      return { resolvedRegions: [], count: 0, results: [] };
     }
 
-    return hits;
-  }
-
-  private getFullText(row: RentalRecord): string {
-    const parts = [row.title, row.text, row.body, row.content, row.message].filter(
-      (p): p is string => typeof p === 'string' && p.trim().length > 0
+    const regionResults = await Promise.all(
+      regions.map((region) => this.repository.queryByRegion(region, { limit }))
     );
-    return parts.join('\n').trim();
+
+    const merged = regionResults
+      .flat()
+      .filter((item) => this.matchesPriceFilter(item, params))
+      .sort((a, b) => b.postDate.localeCompare(a.postDate))
+      .slice(0, limit)
+      .map((item) => this.toSearchResultItem(item));
+
+    return {
+      resolvedRegions: regions,
+      count: merged.length,
+      results: merged
+    };
   }
 
-  private normalizeVi(s: string): string {
-    return s
-      .normalize('NFC')
-      .toLowerCase()
-      .replace(/\s+/g, ' ')
-      .trim();
-  }
-
-  private queryTokens(areaQuery: string): string[] {
-    const q = this.normalizeVi(areaQuery);
-    const split = q.split(/[,;/|]+|\s+và\s+/).map((t) => t.trim()).filter(Boolean);
-    return split.length > 0 ? split : [q];
-  }
-
-  private canonicalTargetsFromQuery(areaQuery: string): Set<string> {
-    const tokens = this.queryTokens(areaQuery);
-    const targets = new Set<string>();
-
-    for (const token of tokens) {
-      if (token.length < 2) continue;
-      for (const group of DISTRICT_ALIAS_GROUPS) {
-        const cn = this.normalizeVi(group.canonical);
-        if (cn.includes(token) || token.includes(cn)) {
-          targets.add(group.canonical);
-        }
-        for (const alias of group.aliases) {
-          const a = this.normalizeVi(alias);
-          if (a.includes(token) || token.includes(a)) {
-            targets.add(group.canonical);
-          }
-        }
-      }
+  private matchesPriceFilter(item: RentalInfo, params: SearchParams): boolean {
+    if (params.maxPriceVnd === undefined) {
+      return true;
     }
 
-    return targets;
+    if (item.price === UNKNOWN_RENTAL_PRICE) {
+      return !params.strictPriceFilter;
+    }
+
+    return item.price <= params.maxPriceVnd;
   }
 
-  private districtsFoundInListing(haystack: string, districtHint?: string): string[] {
-    const text = this.normalizeVi(`${haystack} ${districtHint ?? ''}`);
-    const hits = new Set<string>();
+  private toSearchResultItem(item: RentalInfo): SearchResultItem {
+    const priceUnknown = item.price === UNKNOWN_RENTAL_PRICE;
 
-    for (const group of DISTRICT_ALIAS_GROUPS) {
-      const cn = this.normalizeVi(group.canonical);
-      if (cn.length >= 3 && text.includes(cn)) {
-        hits.add(group.canonical);
-      }
-      for (const alias of group.aliases) {
-        const a = this.normalizeVi(alias);
-        if (a.length >= 2 && text.includes(a)) {
-          hits.add(group.canonical);
-        }
-      }
-    }
-
-    return [...hits];
-  }
-
-  private recordMatchesArea(areaQuery: string, haystack: string, districtHint?: string): boolean {
-    const text = this.normalizeVi(haystack);
-    const hint = this.normalizeVi(districtHint ?? '');
-    const targets = this.canonicalTargetsFromQuery(areaQuery);
-
-    const inListing = new Set(this.districtsFoundInListing(haystack, districtHint));
-
-    if (targets.size > 0) {
-      for (const t of targets) {
-        if (inListing.has(t)) return true;
-      }
-    }
-
-    const tokens = this.queryTokens(areaQuery);
-    for (const token of tokens) {
-      if (token.length >= 3 && (text.includes(token) || hint.includes(token))) {
-        return true;
-      }
-    }
-
-    return false;
+    return {
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      address: item.address,
+      cityLabel: item.cityLabel,
+      districtLabel: item.districtLabel,
+      priceVnd: item.price,
+      priceUnknown,
+      originalLink: item.originalLink,
+      postDate: item.postDate,
+      attachments: item.attachments,
+      source: item.source
+    };
   }
 }

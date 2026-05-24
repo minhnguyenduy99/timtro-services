@@ -38,6 +38,9 @@ importers:
       '@google/genai':
         specifier: ^2.4.0
         version: 2.4.0(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1)(zod@4.4.3))
+      '@timtro/rental-info':
+        specifier: workspace:*
+        version: link:../../libs/rental-info
       apify-client:
         specifier: ^2.23.3
         version: 2.23.3
@@ -60,12 +63,21 @@ importers:
 
   apps/timtro-mcp:
     dependencies:
+      '@aws-sdk/client-dynamodb':
+        specifier: ^3.1049.0
+        version: 3.1049.0
+      '@aws-sdk/lib-dynamodb':
+        specifier: ^3.1049.0
+        version: 3.1049.0(@aws-sdk/client-dynamodb@3.1049.0)
       '@cfworker/json-schema':
         specifier: ^4.1.1
         version: 4.1.1
       '@modelcontextprotocol/server':
         specifier: ^2.0.0-alpha.2
         version: 2.0.0-alpha.2(@cfworker/json-schema@4.1.1)
+      '@timtro/rental-info':
+        specifier: workspace:*
+        version: link:../../libs/rental-info
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -73,6 +85,16 @@ importers:
       vite:
         specifier: ^8.0.13
         version: 8.0.13(@types/node@25.9.0)(esbuild@0.28.0)(tsx@4.22.1)(yaml@2.9.0)
+      vitest:
+        specifier: ^4.1.6
+        version: 4.1.6(@types/node@25.9.0)(vite@8.0.13(@types/node@25.9.0)(esbuild@0.28.0)(tsx@4.22.1)(yaml@2.9.0))
+
+  libs/rental-info:
+    dependencies:
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
+    devDependencies:
       vitest:
         specifier: ^4.1.6
         version: 4.1.6(@types/node@25.9.0)(vite@8.0.13(@types/node@25.9.0)(esbuild@0.28.0)(tsx@4.22.1)(yaml@2.9.0))
