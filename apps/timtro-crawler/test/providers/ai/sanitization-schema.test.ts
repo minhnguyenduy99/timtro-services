@@ -78,6 +78,86 @@ describe("AI sanitization response schema", () => {
     });
   });
 
+  it("ignores hallucinated AI timestamps for post-level rentals and uses postedAt", () => {
+    expect(
+      parseAiSanitizationResponse(
+        normalizeAiSanitizationResponse(rawPost, {
+          classification: "rental",
+          rentals: [
+            {
+              sourcePostId: "4680743102192891",
+              address: "07 Nguyen Ngoc Phuong",
+              city: "Ho Chi Minh",
+              district: "Binh Thanh",
+              title: "Mot can phong studio sieu rong",
+              postDate: "2026-05-23T07:43:42.000Z",
+              timestamp: "2023-10-27T10:00:00.000Z",
+              originalLink: "https://www.facebook.com/groups/binhthanh.phongtro.club/permalink/4680743102192891/",
+              attachments: [{ type: "photo", url: "https://example.com/photo.jpg" }]
+            }
+          ]
+        })
+      )
+    ).toMatchObject({
+      classification: "rental",
+      records: [
+        {
+          id: "fb_4680743102192891",
+          postDate: "2026-05-23T07:43:42.000Z",
+          timestamp: "2026-05-23T02:20:59.000Z"
+        }
+      ]
+    });
+  });
+
+  it("uses comment timestamps for comment-derived rentals", () => {
+    const postWithComment = mapApifyPostToRawPost({
+      facebookId: "2573980229535866",
+      legacyId: "4680482768885591",
+      url: "https://www.facebook.com/groups/binhthanh.phongtro.club/permalink/4680482768885591/",
+      time: "2026-05-23T02:20:59.000Z",
+      text: "Cho thuê studio",
+      topComments: [
+        {
+          commentId: "4675629046037630",
+          commentUrl: "https://facebook.com/comment",
+          text: "Phong rieng",
+          time: "2026-05-23T08:15:00.000Z"
+        }
+      ]
+    });
+
+    expect(
+      parseAiSanitizationResponse(
+        normalizeAiSanitizationResponse(postWithComment, {
+          classification: "rental",
+          rentals: [
+            {
+              sourcePostId: "4680482768885591",
+              sourceCommentId: "4675629046037630",
+              address: "456 Le Loi",
+              city: "Ho Chi Minh",
+              district: "Binh Thanh",
+              title: "Phong rieng",
+              postDate: "2026-05-23T02:20:59.000Z",
+              timestamp: "2023-10-27T10:00:00.000Z",
+              originalLink: "https://facebook.com/comment",
+              attachments: []
+            }
+          ]
+        })
+      )
+    ).toMatchObject({
+      classification: "rental",
+      records: [
+        {
+          id: "fb_4675629046037630",
+          timestamp: "2026-05-23T08:15:00.000Z"
+        }
+      ]
+    });
+  });
+
   it("normalizes Gemini rentals with numeric timestamps and missing sourcePostId", () => {
     expect(
       parseAiSanitizationResponse(
@@ -109,7 +189,8 @@ describe("AI sanitization response schema", () => {
           districtLabel: "Bình Thạnh",
           price: 3_200_000,
           priceUnit: "VND",
-          description: "Cho thuê studio"
+          description: "Cho thuê studio",
+          timestamp: "2026-05-23T02:20:59.000Z"
         }
       ]
     });

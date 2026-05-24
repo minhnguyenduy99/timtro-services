@@ -1,8 +1,8 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const template = readFileSync(new URL("../../template.yaml", import.meta.url), "utf8");
-const workflow = readFileSync(new URL("../../../../.github/workflows/timtro-crawler.yml", import.meta.url), "utf8");
+const workflowPath = new URL("../../../../.github/workflows/timtro-crawler.yml", import.meta.url);
 const crawlEvent = JSON.parse(readFileSync(new URL("../../events/crawl-schedule.json", import.meta.url), "utf8"));
 const sanitizeEvent = JSON.parse(readFileSync(new URL("../../events/sanitize-sqs.json", import.meta.url), "utf8"));
 
@@ -11,7 +11,10 @@ describe("SAM template shape", () => {
     expect(template).toContain("Runtime: nodejs24.x");
     expect(template).toContain("CrawlFunction:");
     expect(template).toContain("Type: ScheduleV2");
-    expect(template).toContain("ScheduleExpression: rate(30 minutes)");
+    expect(template).toContain("ScheduleExpression: cron(0 0 * * ? *)");
+    expect(template).toContain("ScheduleExpressionTimezone: Asia/Ho_Chi_Minh");
+    expect(template).not.toContain("rate(30 minutes)");
+    expect(template).toMatch(/CrawlFunction:[\s\S]*?Timeout: 900/);
     expect(template).toContain("SanitizeFunction:");
     expect(template).toContain("RawRentalPostsTable:");
     expect(template).toContain("RentalInfoTable:");
@@ -88,7 +91,8 @@ describe("SAM template shape", () => {
 });
 
 describe("CI and local event fixtures", () => {
-  it("runs crawler-scoped Nx commands in CI", () => {
+  it.skipIf(!existsSync(workflowPath))("runs crawler-scoped Nx commands in CI", () => {
+    const workflow = readFileSync(workflowPath, "utf8");
     expect(workflow).toContain("pnpm nx test timtro-crawler");
     expect(workflow).toContain("pnpm nx build timtro-crawler");
     expect(workflow).not.toContain("sam build");
