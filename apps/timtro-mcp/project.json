@@ -8,16 +8,30 @@
       "executor": "nx:run-commands",
       "outputs": ["{projectRoot}/dist"],
       "options": {
-        "command": "tsc --watch",
+        "command": "vite build",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "build:watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vite build --watch",
         "cwd": "{projectRoot}"
       },
       "continuous": true
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit -p tsconfig.json",
+        "cwd": "{projectRoot}"
+      }
     },
     "serve": {
       "executor": "nx:run-commands",
       "dependsOn": ["build"],
       "options": {
-        "command": "node dist/apps/timtro-mcp/server.js",
+        "command": "node dist/server.mjs",
         "cwd": "{projectRoot}"
       }
     },
@@ -38,17 +52,16 @@
     },
     "test": {
       "executor": "nx:run-commands",
-      "dependsOn": ["build"],
       "options": {
-        "command": "node scripts/smoke-call.mjs",
-        "cwd": "{workspaceRoot}"
+        "command": "vitest run",
+        "cwd": "{projectRoot}"
       }
     },
     "inspector": {
       "executor": "nx:run-commands",
-      "dependsOn": ["build"],
+      "dependsOn": ["build:watch"],
       "options": {
-        "command": "mcp-inspector node {projectRoot}/dist/server.js",
+        "command": "mcp-inspector node {projectRoot}/dist/server.mjs",
         "cwd": "{workspaceRoot}"
       }
     }

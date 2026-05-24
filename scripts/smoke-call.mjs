@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
-const proc = spawn('node', ['dist/apps/timtro-mcp/server.js'], {
+const proc = spawn('node', ['apps/timtro-mcp/dist/server.mjs'], {
     cwd: root,
     stdio: ['pipe', 'pipe', 'pipe'],
     env: { ...process.env }
