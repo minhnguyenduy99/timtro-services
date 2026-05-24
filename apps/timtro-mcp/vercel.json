@@ -1,8 +1,0 @@
-{
-  "installCommand": "cd ../.. && pnpm install",
-  "functions": {
-    "api/mcp/route.ts": {
-      "maxDuration": 30
-    }
-  }
-}

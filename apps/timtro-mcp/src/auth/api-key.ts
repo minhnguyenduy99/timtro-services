@@ -8,7 +8,10 @@ function readConfiguredApiKey(): string | undefined {
 }
 
 function isProduction(): boolean {
-  return process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production';
+  return (
+    process.env.NODE_ENV === 'production' ||
+    Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME?.trim())
+  );
 }
 
 function constantTimeEqual(left: string, right: string): boolean {
@@ -24,6 +27,7 @@ function constantTimeEqual(left: string, right: string): boolean {
 
 function parseBearerToken(request: Request): string | undefined {
   const authorization = request.headers.get('authorization');
+  console.log('authorization', authorization);
   if (!authorization) {
     return undefined;
   }
@@ -38,6 +42,7 @@ function parseBearerToken(request: Request): string | undefined {
 
 export function validateApiKey(request: Request): AuthInfo | undefined {
   const configuredKey = readConfiguredApiKey();
+  console.log('configuredKey', configuredKey);
 
   if (!configuredKey) {
     if (!isProduction()) {

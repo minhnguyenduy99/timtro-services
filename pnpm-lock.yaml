@@ -78,13 +78,19 @@ importers:
       '@timtro/rental-info':
         specifier: workspace:*
         version: link:../../libs/rental-info
-      '@vercel/oidc-aws-credentials-provider':
-        specifier: ^3.0.5
-        version: 3.1.1
+      hono:
+        specifier: ^4.11.7
+        version: 4.12.19
       zod:
         specifier: ^4.4.3
         version: 4.4.3
     devDependencies:
+      '@types/aws-lambda':
+        specifier: ^8.10.160
+        version: 8.10.161
+      vite:
+        specifier: ^8.0.13
+        version: 8.0.13(@types/node@25.9.0)(esbuild@0.28.0)(tsx@4.22.1)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.6
         version: 4.1.6(@types/node@25.9.0)(vite@8.0.13(@types/node@25.9.0)(esbuild@0.28.0)(tsx@4.22.1)(yaml@2.9.0))
@@ -1199,14 +1205,6 @@ packages:
 
   '@types/retry@0.12.0':
     resolution: {integrity: sha512-wWKOClTTiizcZhXnPY4wikVAwmdYHp8q6DmC+EJUzAMsycb7HB32Kh9RN4+0gExjmPmZSAQjgURXIGATPegAvA==}
-
-  '@vercel/oidc-aws-credentials-provider@3.1.1':
-    resolution: {integrity: sha512-tJR7rdPoLy3hejwDNT00WQRMKRzvy2Rdw0IxAEnAOPwMV8KJTneRAGjdsMUvm70mDTOys531J/C9ZS32Ktm/pg==}
-    engines: {node: '>= 20'}
-
-  '@vercel/oidc@3.4.1':
-    resolution: {integrity: sha512-H6B+/ig/GoahccL3WZjiHayHw1H5KhvTJNceqYulwfK9kkz5iul2hTmYzcJ7tTCQzyd0dutuL9xYFZCyLUqsog==}
-    engines: {node: '>= 20'}
 
   '@vitest/expect@4.1.6':
     resolution: {integrity: sha512-7EHDquPthALSV0jhhjgEW8FXaviMx7rSqu8W6oqCoAuOhKov814P99QDV1pxMA3QPv21YudvJngIhjrNI4opLg==}
@@ -3905,13 +3903,6 @@ snapshots:
       undici-types: 7.24.6
 
   '@types/retry@0.12.0': {}
-
-  '@vercel/oidc-aws-credentials-provider@3.1.1':
-    dependencies:
-      '@aws-sdk/credential-provider-web-identity': 3.972.42
-      '@vercel/oidc': 3.4.1
-
-  '@vercel/oidc@3.4.1': {}
 
   '@vitest/expect@4.1.6':
     dependencies:

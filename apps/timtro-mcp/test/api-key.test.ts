@@ -58,4 +58,12 @@ describe("validateApiKey", () => {
 
     expect(validateApiKey(requestWithAuth("anything"))).toBeUndefined();
   });
+
+  it("rejects all requests on Lambda when MCP_API_KEY is unset", () => {
+    delete process.env.MCP_API_KEY;
+    delete process.env.NODE_ENV;
+    process.env.AWS_LAMBDA_FUNCTION_NAME = "timtro-mcp-dev";
+
+    expect(validateApiKey(requestWithAuth("anything"))).toBeUndefined();
+  });
 });

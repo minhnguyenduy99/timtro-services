@@ -11,10 +11,26 @@
         "cwd": "{projectRoot}"
       }
     },
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/dist"],
+      "options": {
+        "command": "vite build",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "build:watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vite build --watch",
+        "cwd": "{projectRoot}"
+      },
+      "continuous": true
+    },
     "dev:http": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "vercel dev",
+        "command": "pnpm exec tsx scripts/dev-http-server.ts",
         "cwd": "{projectRoot}"
       }
     },
@@ -39,12 +55,27 @@
         "cwd": "{projectRoot}"
       }
     },
-    "deploy:iam": {
+    "sam:local": {
       "executor": "nx:run-commands",
-      "dependsOn": ["test", "sam:validate"],
+      "dependsOn": ["build:watch"],
       "options": {
-        "command": "sam deploy --config-env dev --parameter-overrides \"$(node scripts/format-sam-parameter-overrides.mjs env.example.json)\"",
+        "command": "sam local start-api --env-vars env.local.json --port 3000",
         "cwd": "{projectRoot}"
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["test", "build"],
+      "options": {
+        "command": "sam deploy --config-env dev --parameter-overrides \"$(node scripts/format-sam-parameter-overrides.mjs env.dev.json)\"",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "inspector:local": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec mcp-inspector --transport http --server-url http://localhost:3000/mcp",
+        "cwd": "{workspaceRoot}"
       }
     }
   }

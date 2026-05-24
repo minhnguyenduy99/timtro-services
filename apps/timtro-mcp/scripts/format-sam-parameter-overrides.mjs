@@ -3,8 +3,7 @@ import { readFileSync } from "node:fs";
 const TEMPLATE_PARAMETERS = new Set([
   "EnvironmentName",
   "RentalInfoTableName",
-  "VercelTeamSlug",
-  "VercelProjectName"
+  "McpApiKey"
 ]);
 
 const envFile = process.argv[2] ?? "env.example.json";

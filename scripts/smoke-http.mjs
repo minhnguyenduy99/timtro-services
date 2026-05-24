@@ -3,11 +3,11 @@
  * Chạy: pnpm smoke
  *
  * Env:
- * - MCP_URL (default http://localhost:3000/api/mcp)
+ * - MCP_URL (default http://localhost:3000/mcp)
  * - MCP_API_KEY (optional locally when dev bypass is active)
  * - SKIP_SEARCH_RENTALS=1 — bỏ qua search_rentals khi chưa có AWS
  */
-const MCP_URL = process.env.MCP_URL ?? "http://localhost:3000/api/mcp";
+const MCP_URL = process.env.MCP_URL ?? "http://localhost:3000/mcp";
 const MCP_API_KEY = process.env.MCP_API_KEY;
 const SKIP_SEARCH = process.env.SKIP_SEARCH_RENTALS === "1";
 
@@ -30,8 +30,16 @@ async function postJsonRpc(body) {
     throw new Error("HTTP 401 Unauthorized — kiểm tra MCP_API_KEY");
   }
 
+  if (response.status === 202 || response.status === 204) {
+    return null;
+  }
+
   const contentType = response.headers.get("content-type") ?? "";
   const raw = await response.text();
+
+  if (!raw) {
+    return null;
+  }
 
   if (contentType.includes("application/json")) {
     return JSON.parse(raw);

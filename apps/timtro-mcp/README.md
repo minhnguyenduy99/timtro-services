@@ -2,16 +2,17 @@
 
 Streamable HTTP MCP server for rental listings in TP.HCM. Reads `RentalInfoTableV2` on DynamoDB (populated by `timtro-crawler`) and exposes `get_areas` + `search_rentals` tools.
 
-Deploy target: **Vercel** (serverless `/api/mcp`). AWS access uses a **SAM IAM role** assumed via **Vercel OIDC** — no long-lived AWS keys in Vercel env.
+Deploy target: **AWS Lambda** behind **API Gateway HTTP API** at `/mcp`. DynamoDB access uses the Lambda execution role — no long-lived AWS keys in environment variables beyond the MCP API key.
 
 ## Local development
 
 ```bash
 corepack enable
 pnpm install
-cd apps/timtro-mcp
-vercel dev
+pnpm dev
 ```
+
+This starts a local HTTP server at `http://localhost:3000/mcp` (same Web Standard handler as Lambda production).
 
 Optional env (`.env` or shell):
 
@@ -20,7 +21,7 @@ Optional env (`.env` or shell):
 | `MCP_API_KEY` | Bearer token for HTTP auth. Unset in non-production → dev bypass. |
 | `RENTAL_INFO_TABLE_NAME` | DynamoDB v2 table, e.g. `timtro-rental-info-v2-dev` |
 | `AWS_REGION` | Default `ap-southeast-1` |
-| `AWS_PROFILE` / access keys | Local AWS credentials when `AWS_ROLE_ARN` is unset |
+| `AWS_PROFILE` / access keys | Local AWS credentials for `search_rentals` |
 
 Smoke test (server must be running on port 3000):
 
@@ -28,6 +29,33 @@ Smoke test (server must be running on port 3000):
 pnpm smoke
 # CI-friendly (skip DynamoDB):
 SKIP_SEARCH_RENTALS=1 pnpm smoke
+```
+
+### SAM local
+
+Build the Lambda bundle, then run API Gateway locally:
+
+```bash
+pnpm nx build timtro-mcp
+pnpm nx sam:local timtro-mcp
+```
+
+Create `env.local.json` (gitignored) with Lambda env overrides:
+
+```json
+{
+  "McpFunction": {
+    "RENTAL_INFO_TABLE_NAME": "timtro-rental-info-v2-dev",
+    "MCP_API_KEY": "local-dev-key",
+    "NODE_ENV": "production"
+  }
+}
+```
+
+Smoke against SAM local:
+
+```bash
+MCP_URL=http://127.0.0.1:3000/mcp MCP_API_KEY=local-dev-key SKIP_SEARCH_RENTALS=1 pnpm smoke
 ```
 
 ## Cursor / MCP client
@@ -38,7 +66,7 @@ HTTP transport with API key:
 {
   "mcpServers": {
     "timtro": {
-      "url": "https://<project>.vercel.app/api/mcp",
+      "url": "https://{api-id}.execute-api.ap-southeast-1.amazonaws.com/mcp",
       "headers": {
         "Authorization": "Bearer <MCP_API_KEY>"
       }
@@ -53,7 +81,7 @@ Local:
 {
   "mcpServers": {
     "timtro": {
-      "url": "http://localhost:3000/api/mcp"
+      "url": "http://localhost:3000/mcp"
     }
   }
 }
@@ -73,38 +101,32 @@ Always call `get_areas` first for valid `city` / `district` codes.
 ## Deploy sequence
 
 1. **Crawler stack** — ensure `RentalInfoTableV2` exists (`pnpm crawler:deploy`).
-2. **Vercel OIDC provider** (one-time per AWS account) — register `https://oidc.vercel.com/<TEAM_SLUG>` in IAM Identity Providers with audience `https://vercel.com/<TEAM_SLUG>`. See [Vercel AWS OIDC docs](https://vercel.com/docs/oidc/aws).
-3. **MCP IAM stack** — copy `env.example.json` → `env.dev.json`, fill Vercel team/project slugs, then:
+2. **MCP stack env** — copy `env.example.json` → `env.dev.json`, set `McpApiKey`, then:
 
    ```bash
-   pnpm mcp:deploy:iam
-   # or: nx deploy:iam timtro-mcp
+   pnpm mcp:deploy
+   # or: pnpm nx deploy timtro-mcp
    ```
 
-4. **Vercel env** — set on the Vercel project (Root Directory = `apps/timtro-mcp`):
+3. **Stack output** — use `McpApiUrl` from CloudFormation outputs as the MCP client URL.
+4. **Cursor** — point MCP config at the API Gateway URL + bearer token.
 
-   | Variable | Source |
-   |----------|--------|
-   | `MCP_API_KEY` | Generate a secret |
-   | `AWS_ROLE_ARN` | SAM output `McpReadRoleArn` |
-   | `AWS_REGION` | `ap-southeast-1` |
-   | `RENTAL_INFO_TABLE_NAME` | SAM output or `timtro-rental-info-v2-dev` |
-
-5. **Vercel deploy** — `vercel deploy` or connect Git repo.
-6. **Cursor** — point MCP config at production URL + bearer token.
+If migrating from the old IAM-only stack (`timtro-mcp-iam-*`), delete that stack manually after the new Lambda stack is healthy.
 
 ## Nx targets
 
 | Target | Command |
 |--------|---------|
-| `dev:http` | `vercel dev` |
+| `build` | Vite bundle → `dist/lambda.mjs` |
+| `dev:http` | Local Node HTTP server on `/mcp` |
 | `test` | Unit tests |
 | `smoke` | HTTP smoke script |
 | `sam:validate` | Lint SAM template |
-| `deploy:iam` | Deploy IAM role stack |
+| `sam:local` | `sam local start-api` on port 3000 |
+| `deploy` | Build + `sam deploy` |
 
 ## Security notes
 
-- IAM role: `dynamodb:Query` + `DescribeTable` only; explicit deny on writes.
-- Trust policy scopes Vercel OIDC `sub` to your team/project/environment.
-- Do not log `Authorization` headers. Rotate `MCP_API_KEY` by updating Vercel env + client config.
+- Lambda role: `DynamoDBReadPolicy` on the rental info table only.
+- Bearer API key validated in the handler (not at API Gateway).
+- Do not log `Authorization` headers. Rotating `MCP_API_KEY` requires a stack redeploy with an updated parameter.

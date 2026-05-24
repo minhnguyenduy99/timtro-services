@@ -1,46 +1,52 @@
-import { readFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
+import { readFileSync } from 'node:fs';
+import { describe, expect, it } from 'vitest';
 
-const template = readFileSync(new URL("../../template.yaml", import.meta.url), "utf8");
+const template = readFileSync(new URL('../../template.yaml', import.meta.url), 'utf8');
 
-describe("SAM template shape", () => {
-  it("defines the Vercel OIDC read role without creating DynamoDB tables", () => {
-    expect(template).toContain("McpDynamoDbReadRole:");
-    expect(template).toContain("Type: AWS::IAM::Role");
-    expect(template).not.toContain("Type: AWS::DynamoDB::Table");
-    expect(template).not.toContain("Type: AWS::Serverless::Function");
+describe('SAM template shape', () => {
+  it('defines HTTP API and Lambda function without creating DynamoDB tables', () => {
+    expect(template).toContain('McpHttpApi:');
+    expect(template).toContain('McpFunction:');
+    expect(template).toContain('Type: AWS::Serverless::HttpApi');
+    expect(template).toContain('Type: AWS::Serverless::Function');
+    expect(template).not.toContain('Type: AWS::DynamoDB::Table');
   });
 
-  it("trusts Vercel OIDC web identity with aud and sub conditions", () => {
-    expect(template).toContain("sts:AssumeRoleWithWebIdentity");
-    expect(template).toContain("oidc-provider/oidc.vercel.com/");
-    expect(template).toContain("VercelTeamSlug");
-    expect(template).toContain("VercelProjectName");
-    expect(template).toContain("environment:production");
+  it('routes GET, POST, and DELETE on /mcp via HTTP API events', () => {
+    expect(template).toContain('Type: HttpApi');
+    expect(template).toContain('Path: /mcp');
+    expect(template).toContain('Method: GET');
+    expect(template).toContain('Method: POST');
+    expect(template).toContain('Method: DELETE');
+    expect(template).toContain('PayloadFormatVersion: "2.0"');
   });
 
-  it("grants read-only DynamoDB Query on the rental info table and indexes", () => {
-    expect(template).toContain("dynamodb:Query");
-    expect(template).toContain("dynamodb:DescribeTable");
-    expect(template).toContain("/index/*");
-    expect(template).toContain("timtro-rental-info-v2-${EnvironmentName}");
-    expect(template).toContain("dynamodb:PutItem");
-    expect(template).toContain("Effect: Deny");
+  it('does not contain Vercel OIDC trust policy or IAM read role', () => {
+    expect(template).not.toContain('McpDynamoDbReadRole');
+    expect(template).not.toContain('oidc-provider/oidc.vercel.com/');
+    expect(template).not.toContain('VercelTeamSlug');
+    expect(template).not.toContain('VercelProjectName');
   });
 
-  it("parameterizes environment and Vercel project metadata", () => {
-    for (const parameter of [
-      "EnvironmentName",
-      "RentalInfoTableName",
-      "VercelTeamSlug",
-      "VercelProjectName"
-    ]) {
+  it('bundles Lambda code from dist/ with SkipBuild enabled', () => {
+    expect(template).toContain('Handler: lambda.handler');
+    expect(template).toContain('CodeUri: dist/');
+    expect(template).toContain('SkipBuild: true');
+  });
+
+  it('grants DynamoDB read access on the rental info table and keeps McpApiKey secret', () => {
+    expect(template).toContain('DynamoDBReadPolicy');
+    expect(template).toContain('timtro-rental-info-v2-${EnvironmentName}');
+    expect(template).toContain('McpApiKey:');
+    expect(template).toContain('NoEcho: true');
+  });
+
+  it('parameterizes environment and exports API URL', () => {
+    for (const parameter of ['EnvironmentName', 'RentalInfoTableName', 'McpApiKey']) {
       expect(template).toContain(`${parameter}:`);
     }
-  });
 
-  it("exports role ARN and resolved table name", () => {
-    expect(template).toContain("McpReadRoleArn:");
-    expect(template).toContain("RentalInfoTableName:");
+    expect(template).toContain('McpApiUrl:');
+    expect(template).toContain('McpFunctionArn:');
   });
 });

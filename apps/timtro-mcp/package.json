@@ -10,16 +10,22 @@
   "engines": {
     "node": ">=20"
   },
+  "scripts": {
+    "dev": "nx sam:local --outputStyle=dynamic-legacy",
+    "inspector:local": "nx inspector:local"
+  },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.1049.0",
     "@aws-sdk/lib-dynamodb": "^3.1049.0",
     "@cfworker/json-schema": "^4.1.1",
     "@modelcontextprotocol/server": "^2.0.0-alpha.2",
     "@timtro/rental-info": "workspace:*",
-    "@vercel/oidc-aws-credentials-provider": "^3.0.5",
+    "hono": "^4.11.7",
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.160",
+    "vite": "^8.0.13",
     "vitest": "^4.1.6"
   }
 }

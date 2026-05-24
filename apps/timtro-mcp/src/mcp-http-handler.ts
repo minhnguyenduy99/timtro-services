@@ -1,7 +1,7 @@
 import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/server';
 
-import { validateApiKey } from '../../src/auth/api-key';
-import { createTimtroMcpServer } from '../../src/create-mcp-server';
+import { validateApiKey } from './auth/api-key';
+import { createTimtroMcpServer } from './create-mcp-server';
 
 const server = createTimtroMcpServer();
 const transport = new WebStandardStreamableHTTPServerTransport({
@@ -13,6 +13,8 @@ const ready = server.connect(transport);
 
 async function handleMcpRequest(request: Request): Promise<Response> {
   await ready;
+
+  console.log('handleMcpRequest: connected');
 
   const authInfo = validateApiKey(request);
   if (!authInfo) {
