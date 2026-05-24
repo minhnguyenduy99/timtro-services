@@ -1,7 +1,7 @@
 ---
 title: "feat: Align timtro-mcp with RentalInfo and DynamoDB"
 type: feat
-status: active
+status: completed
 date: 2026-05-24
 origin: docs/spec/data-models.md
 ---

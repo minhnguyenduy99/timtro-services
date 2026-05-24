@@ -1,12 +1,18 @@
 {
-  "extends": "./tsconfig.base.json",
-  "files": [],
-  "references": [
-    {
-      "path": "./apps/timtro-mcp"
-    },
-    {
-      "path": "./apps/timtro-crawler"
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@timtro/rental-info": ["libs/rental-info/src/index.ts"]
     }
-  ]
+  },
+  "files": []
 }

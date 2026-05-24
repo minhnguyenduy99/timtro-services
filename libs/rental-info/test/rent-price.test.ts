@@ -5,7 +5,7 @@ import {
   parseMonthlyRentVnd,
   resolveRentalPrice,
   UNKNOWN_RENTAL_PRICE
-} from "../../src/domain/rent-price";
+} from "../src/rent-price";
 
 const phoneListing = `💥 Cuối Tháng Trống Căn Hộ 1PN Siêu Phẩm Tới
 🏠 Địa Chỉ : 21 Bình Lợi - Bình Thạnh

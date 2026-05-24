@@ -35,9 +35,9 @@ export type RentalInfoCandidate = {
   city: string;
   district: string;
   title: string;
-  description: string;
-  price: number;
-  priceUnit: "VND";
+  description?: string;
+  price?: number;
+  priceUnit?: "VND";
   postDate: string;
   timestamp: string;
   originalLink: string;

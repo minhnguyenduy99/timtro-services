@@ -1,8 +1,7 @@
 import { z } from "zod";
 
+import { resolveRentalPrice, type RentalInfo } from "@timtro/rental-info";
 import type { RawRentalPost } from "../../domain/raw-rental-post";
-import { resolveRentalPrice, UNKNOWN_RENTAL_PRICE } from "../../domain/rent-price";
-import type { RentalInfo } from "../../domain/rental-info";
 import { DomainValidationError, validateRentalInfoCandidates } from "../../domain/schemas";
 
 export const aiSanitizationSchemaVersion = "2026-05-20";

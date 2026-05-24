@@ -10,7 +10,7 @@ import {
   extractFacebookPostIdentity,
   mapApifyPostToRawPost
 } from "../../src/domain/raw-rental-post";
-import { buildRentalInfoId } from "../../src/domain/rental-info";
+import { buildRentalInfoId } from "@timtro/rental-info";
 
 describe("Facebook source identity mapping", () => {
   it("builds raw post ids from group and post identifiers", () => {

@@ -1,4 +1,4 @@
-import type { RentalInfo } from "../../domain/rental-info";
+import type { RentalInfo } from "@timtro/rental-info";
 import type { RawRentalPost } from "../../domain/raw-rental-post";
 
 export type AiProviderMetadata = {
