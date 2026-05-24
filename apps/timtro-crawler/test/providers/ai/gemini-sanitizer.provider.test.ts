@@ -121,7 +121,7 @@ describe("GeminiSanitizerProvider", () => {
     });
   });
 
-  it("sends minimized prompt content and strips token-bearing URL query strings", async () => {
+  it("omits attachments from the Gemini prompt to reduce token cost", async () => {
     const generateContent = vi.fn(async () => ({
       text: JSON.stringify({ classification: "non_rental", rentals: [] })
     }));
@@ -143,10 +143,49 @@ describe("GeminiSanitizerProvider", () => {
       model: "gemini-test",
       config: { responseMimeType: "application/json", temperature: 0.1 }
     });
-    expect(String(request?.contents)).toContain("https://cdn.example.com/photo.jpg");
-    expect(String(request?.contents)).not.toContain("token=secret");
-    expect(String(request?.contents)).not.toContain("profileName");
-    expect(String(request?.contents)).not.toContain("accessToken");
+    const contents = String(request?.contents);
+    expect(contents).not.toContain("cdn.example.com");
+    expect(contents).not.toContain("attachments");
+    expect(contents).not.toContain("token=secret");
+    expect(contents).not.toContain("profileName");
+    expect(contents).not.toContain("accessToken");
+  });
+
+  it("persists raw post attachment URLs instead of Gemini-returned URLs", async () => {
+    const originalUrl =
+      "https://scontent-hou1-1.xx.fbcdn.net/v/t39.30808-6/704810619_122113775865123546_5741936058581955408_n.jpg?oh=00_Af5fGpZFVELOwbLb7rGANSqq5vZ1pnJrQMN4laJUFX_19g&oe=6A17590B";
+    const hallucinatedUrl =
+      "https://scontent-lga3-1.xx.fbcdn.net/v/t39.30808-6/705394107_122113832691123546_4001698392742102439_n.jpg";
+    const provider = new GeminiSanitizerProvider({
+      apiKey: "key",
+      model: "gemini-test",
+      client: clientReturning({
+        classification: "rental",
+        rentals: [
+          {
+            sourcePostId: "post-1",
+            address: "123 Nguyen Trai",
+            city: "Ho Chi Minh",
+            district: "District 1",
+            title: "Phong tro Quan 1",
+            postDate: "2026-05-19T00:00:00.000Z",
+            timestamp: "2026-05-20T00:00:00.000Z",
+            originalLink: "https://facebook.com/post",
+            attachments: [{ type: "photo", url: hallucinatedUrl }]
+          }
+        ]
+      })
+    });
+
+    await expect(
+      provider.sanitize({
+        ...rawPost,
+        attachments: [{ type: "photo", url: originalUrl }]
+      })
+    ).resolves.toMatchObject({
+      kind: "rental_info",
+      records: [{ attachments: [{ type: "photo", url: originalUrl }] }]
+    });
   });
 
   it("classifies non-rentals without treating them as infrastructure failures", async () => {

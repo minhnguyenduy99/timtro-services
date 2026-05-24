@@ -158,6 +158,37 @@ describe("AI sanitization response schema", () => {
     });
   });
 
+  it("uses raw post attachments and ignores hallucinated AI attachment URLs", () => {
+    const originalUrl =
+      "https://scontent-hou1-1.xx.fbcdn.net/v/t39.30808-6/704810619_122113775865123546_5741936058581955408_n.jpg?oh=00_Af5fGpZFVELOwbLb7rGANSqq5vZ1pnJrQMN4laJUFX_19g&oe=6A17590B";
+    const postWithAttachments = {
+      ...rawPost,
+      attachments: [{ type: "photo" as const, url: originalUrl }]
+    };
+
+    expect(
+      parseAiSanitizationResponse(
+        normalizeAiSanitizationResponse(postWithAttachments, {
+          classification: "rental",
+          rentals: [
+            {
+              ...validRental,
+              attachments: [
+                {
+                  type: "photo",
+                  url: "https://scontent-lga3-1.xx.fbcdn.net/v/t39.30808-6/705394107_122113832691123546_4001698392742102439_n.jpg"
+                }
+              ]
+            }
+          ]
+        })
+      )
+    ).toMatchObject({
+      classification: "rental",
+      records: [{ attachments: [{ type: "photo", url: originalUrl }] }]
+    });
+  });
+
   it("normalizes Gemini rentals with numeric timestamps and missing sourcePostId", () => {
     expect(
       parseAiSanitizationResponse(

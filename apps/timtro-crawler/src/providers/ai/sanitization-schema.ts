@@ -81,7 +81,7 @@ function normalizeRentalCandidate(rawPost: RawRentalPost, rental: unknown): unkn
     postDate: coerceDateTimeString(rental.postDate, rawPost.postedAt),
     timestamp: resolveRentalTimestamp(rawPost, rental),
     originalLink: firstNonEmptyString(rental.originalLink, rawPost.url),
-    attachments: normalizeAttachments(rental.attachments),
+    attachments: rawPost.attachments,
     description: rawPost.text ?? "",
     ...normalizePriceFields(rental, rawPost)
   };
@@ -98,24 +98,6 @@ function normalizePriceFields(
   return resolveRentalPrice({
     aiPrice: rental.price ?? rental.priceVnd ?? rental.monthlyRentVnd,
     text
-  });
-}
-
-function normalizeAttachments(value: unknown): unknown {
-  if (!Array.isArray(value)) {
-    return value;
-  }
-
-  return value.map((attachment) => {
-    if (!isRecord(attachment)) {
-      return attachment;
-    }
-
-    const mediaType = String(attachment.type ?? "photo").toLowerCase();
-    return {
-      ...attachment,
-      type: mediaType.includes("video") ? "video" : "photo"
-    };
   });
 }
 
