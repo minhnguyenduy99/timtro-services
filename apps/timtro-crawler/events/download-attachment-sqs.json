@@ -1,0 +1,20 @@
+{
+  "Records": [
+    {
+      "messageId": "download-attachment-message-1",
+      "receiptHandle": "receipt",
+      "body": "{\"region\":\"ho_chi_minh_binh_thanh\",\"id\":\"fb_4685293285071206\"}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1",
+        "SenderId": "sender",
+        "ApproximateFirstReceiveTimestamp": "1"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "md5",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:ap-southeast-1:123456789012:timtro-download-attachment-dev",
+      "awsRegion": "ap-southeast-1"
+    }
+  ]
+}

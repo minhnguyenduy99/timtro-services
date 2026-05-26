@@ -7,7 +7,6 @@ const TEMPLATE_PARAMETERS = new Set([
   "ApifyToken",
   "GeminiApiKey",
   "GeminiModel",
-  "GeminiDataProcessingApproved",
   "TimtroUseFakeProviders"
 ]);
 

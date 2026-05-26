@@ -1,6 +1,7 @@
 import { z } from "zod";
 
-import { resolveRentalPrice, type RentalInfo } from "@timtro/rental-info";
+import { buildSourcePostId, resolveRentalPrice, type RentalInfo } from "@timtro/rental-info";
+
 import type { RawRentalPost } from "../../domain/raw-rental-post";
 import { DomainValidationError, validateRentalInfoCandidates } from "../../domain/schemas";
 
@@ -77,7 +78,7 @@ function normalizeRentalCandidate(rawPost: RawRentalPost, rental: unknown): unkn
 
   return {
     ...rental,
-    sourcePostId: firstNonEmptyString(rental.sourcePostId, rawPost.postId),
+    sourcePostId: buildSourcePostId(rawPost.postId),
     postDate: coerceDateTimeString(rental.postDate, rawPost.postedAt),
     timestamp: resolveRentalTimestamp(rawPost, rental),
     originalLink: firstNonEmptyString(rental.originalLink, rawPost.url),

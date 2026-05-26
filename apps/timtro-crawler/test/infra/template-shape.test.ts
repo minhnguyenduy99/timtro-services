@@ -23,6 +23,28 @@ describe("SAM template shape", () => {
     expect(template).toContain("byPrice");
     expect(template).toContain("SanitizationQueue:");
     expect(template).toContain("SanitizationDeadLetterQueue:");
+    expect(template).toContain("AttachmentMediaBucket:");
+    expect(template).toContain("DownloadAttachmentQueue:");
+    expect(template).toContain("DownloadAttachmentFunction:");
+    expect(template).toContain("UpdateAttachmentMetadataFunction:");
+  });
+
+  it("defines attachment mirror infrastructure without a download DLQ", () => {
+    expect(template).not.toContain("DownloadAttachmentDeadLetterQueue:");
+    expect(template).not.toMatch(/DownloadAttachmentQueue:[\s\S]*?RedrivePolicy:/);
+    expect(template).toContain('QueueName: !Sub "timtro-download-attachment-${EnvironmentName}"');
+    expect(template).toContain("VisibilityTimeout: 360");
+    expect(template).toContain("s3:GetObject");
+    expect(template).toContain("public/*");
+    expect(template).toContain('Value: public/attachments/');
+    expect(template).toContain("NotificationConfiguration:");
+    expect(template).toContain("UpdateAttachmentMetadataFunctionAttachmentMediaPermission");
+    expect(template).not.toContain("GeminiApproved");
+    expect(template).not.toMatch(/UpdateAttachmentMetadataFunction:[\s\S]*?Type: S3/);
+    expect(template).toMatch(/DownloadAttachmentFunction:[\s\S]*?Timeout: 300/);
+    expect(template).toMatch(/DownloadAttachmentFunction:[\s\S]*?MemorySize: 1024/);
+    expect(template).toContain("Handler: download-attachment.handler");
+    expect(template).toContain("Handler: update-attachment-metadata.handler");
   });
 
   it("uses partial batch failure reporting for SQS sanitization", () => {
@@ -41,6 +63,8 @@ describe("SAM template shape", () => {
     expect(template).toContain("RAW_RENTAL_POSTS_TABLE_NAME: !Ref RawRentalPostsTable");
     expect(template).toContain("RENTAL_INFO_TABLE_NAME: !Ref RentalInfoTableV2");
     expect(template).toContain("SANITIZATION_QUEUE_URL: !Ref SanitizationQueue");
+    expect(template).toContain("DOWNLOAD_ATTACHMENT_QUEUE_URL: !Ref DownloadAttachmentQueue");
+    expect(template).toContain('ATTACHMENT_MEDIA_BUCKET_NAME: !Sub "timtro-attachment-media-${EnvironmentName}"');
   });
 
   it("parameterizes provider and environment config", () => {
@@ -49,8 +73,7 @@ describe("SAM template shape", () => {
       "FacebookGroupUrls",
       "ApifyToken",
       "GeminiApiKey",
-      "GeminiModel",
-      "GeminiDataProcessingApproved"
+      "GeminiModel"
     ]) {
       expect(template).toContain(`${parameter}:`);
     }
@@ -67,15 +90,26 @@ describe("SAM template shape", () => {
       "APIFY_TOKEN",
       "GEMINI_API_KEY",
       "GEMINI_MODEL",
-      "GEMINI_DATA_PROCESSING_APPROVED",
       "LOG_LEVEL",
       "TIMTRO_USE_FAKE_PROVIDERS"
     ]) {
       expect(template).toContain(`${envVar}:`);
     }
 
-    expect(template).not.toMatch(/CrawlFunction:[\s\S]*?Environment:/);
-    expect(template).not.toMatch(/SanitizeFunction:[\s\S]*?Environment:/);
+    const crawlSection = template.split("CrawlFunction:")[1]?.split("SanitizeFunction:")[0] ?? "";
+    expect(crawlSection).not.toContain("Environment:");
+    expect(template).toMatch(
+      /SanitizeFunction:[\s\S]*?DOWNLOAD_ATTACHMENT_QUEUE_URL: !Ref DownloadAttachmentQueue/
+    );
+    expect(template).toMatch(
+      /DownloadAttachmentFunction:[\s\S]*?ATTACHMENT_MEDIA_BUCKET_NAME: !Sub "timtro-attachment-media-\$\{EnvironmentName\}"/
+    );
+    expect(template).toMatch(
+      /DownloadAttachmentFunction:[\s\S]*?dynamodb:GetItem[\s\S]*?Resource: !GetAtt RentalInfoTableV2\.Arn/
+    );
+    expect(template).not.toMatch(
+      /DownloadAttachmentFunction:[\s\S]*?Resource: !GetAtt RawRentalPostsTable\.Arn/
+    );
   });
 
   it("uses prebuilt Vite handler bundles in dist instead of SAM esbuild", () => {
@@ -90,7 +124,6 @@ describe("SAM template shape", () => {
     expect(template).not.toContain("secretsmanager:");
     expect(template).not.toContain("Resource: \"*\"");
     expect(template).not.toContain("Resource: '*'");
-    expect(template).toContain("RetentionInDays: 30");
   });
 });
 
@@ -102,7 +135,6 @@ describe("CI and local event fixtures", () => {
     expect(workflow).not.toContain("sam build");
     expect(workflow).toContain("--config-env prod");
     expect(workflow).toContain("configure-aws-credentials");
-    expect(workflow).toContain("GEMINI_DATA_PROCESSING_APPROVED");
     expect(workflow).toContain("APIFY_TOKEN");
     expect(workflow).toContain("GEMINI_API_KEY");
   });

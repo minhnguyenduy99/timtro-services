@@ -1,17 +1,26 @@
 import { defineConfig } from "vite";
 
-const handler = process.env.TIMTRO_CRAWLER_HANDLER;
+const handler = process.env.TIMTRO_CRAWLER_HANDLER ?? "";
 const handlerEntries = {
   crawl: "src/handlers/crawl.handler.ts",
-  sanitize: "src/handlers/sanitize.handler.ts"
+  sanitize: "src/handlers/sanitize.handler.ts",
+  "download-attachment": "src/handlers/download-attachment.handler.ts",
+  "update-attachment-metadata": "src/handlers/update-attachment-metadata.handler.ts"
 } as const;
 
-if (handler !== "crawl" && handler !== "sanitize") {
-  throw new Error("TIMTRO_CRAWLER_HANDLER must be set to either 'crawl' or 'sanitize'");
+type CrawlerHandler = keyof typeof handlerEntries;
+
+if (!(handler in handlerEntries)) {
+  throw new Error(
+    "TIMTRO_CRAWLER_HANDLER must be one of: crawl, sanitize, download-attachment, update-attachment-metadata"
+  );
 }
+
+const crawlerHandler = handler as CrawlerHandler;
 
 const awsSdkExternals = [
   "@aws-sdk/client-dynamodb",
+  "@aws-sdk/client-s3",
   "@aws-sdk/client-sqs",
   "@aws-sdk/lib-dynamodb"
 ];
@@ -23,15 +32,15 @@ export default defineConfig({
   },
   build: {
     outDir: "dist",
-    emptyOutDir: handler === "crawl",
+    emptyOutDir: crawlerHandler === "crawl",
     target: "node24",
     ssr: true,
     minify: true,
     rolldownOptions: {
-      input: handlerEntries[handler],
+      input: handlerEntries[crawlerHandler],
       external: awsSdkExternals,
       output: {
-        entryFileNames: `${handler}.mjs`,
+        entryFileNames: `${crawlerHandler}.mjs`,
         codeSplitting: false
       }
     }

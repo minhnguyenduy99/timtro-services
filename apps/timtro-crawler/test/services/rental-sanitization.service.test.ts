@@ -5,7 +5,8 @@ import type { RentalInfo } from "@timtro/rental-info";
 import { DomainValidationError } from "../../src/domain/schemas";
 import type { SanitizationMessage } from "../../src/domain/sanitization-message";
 import { AiProviderError, type AiSanitizationResult, type AiSanitizerProvider } from "../../src/providers/ai/ai-sanitizer.provider";
-import type { RawPostStore, RentalInfoStore } from "../../src/services/aws-clients";
+import type { DownloadAttachmentMessage } from "../../src/domain/download-attachment-message";
+import type { DownloadAttachmentQueue, RawPostStore, RentalInfoStore } from "../../src/services/aws-clients";
 import { RentalSanitizationService } from "../../src/services/rental-sanitization.service";
 
 const rawPost = mapApifyPostToRawPost({
@@ -28,7 +29,7 @@ const rentalInfo: RentalInfo = {
   region: "ho_chi_minh_district_1",
   id: "fb_post",
   source: "fb",
-  sourcePostId: "post",
+  sourcePostId: "fb_post",
   address: "123 Nguyen Trai",
   city: "ho_chi_minh",
   cityLabel: "Hồ Chí Minh",
@@ -81,6 +82,22 @@ class MemoryRentalInfoStore implements RentalInfoStore {
 
   async put(record: RentalInfo): Promise<void> {
     this.records.push(record);
+  }
+
+  async get(): Promise<RentalInfo | undefined> {
+    return undefined;
+  }
+
+  async updateAttachmentUrl(): Promise<void> {
+    throw new Error("not used");
+  }
+}
+
+class MemoryDownloadQueue implements DownloadAttachmentQueue {
+  messages: DownloadAttachmentMessage[] = [];
+
+  async send(message: DownloadAttachmentMessage): Promise<void> {
+    this.messages.push(message);
   }
 }
 
@@ -209,6 +226,61 @@ describe("RentalSanitizationService", () => {
 
     await expect(service.process(message)).resolves.toMatchObject({ outcome: "retry" });
     expect(rawStore.record?.processStatus).toBe("pending");
+  });
+
+  it("enqueues download attachment work after all rental info puts", async () => {
+    const downloadQueue = new MemoryDownloadQueue();
+    const rentalWithPhoto = {
+      ...rentalInfo,
+      attachments: [{ type: "photo" as const, url: "https://facebook.com/photo.jpg" }]
+    };
+    let completed = false;
+    rentalStore.put = async (record) => {
+      rentalStore.records.push(record);
+      if (rentalStore.records.length === 2) {
+        expect(completed).toBe(false);
+      }
+    };
+    rawStore.markCompleted = async () => {
+      completed = true;
+    };
+
+    const service = new RentalSanitizationService(
+      rawStore,
+      rentalStore,
+      new StaticProvider({
+        kind: "rental_info",
+        records: [rentalWithPhoto, { ...rentalWithPhoto, id: "fb_comment", region: "ho_chi_minh_district_3" }],
+        metadata: { provider: "fake", model: "fake", promptVersion: "v1", schemaVersion: "v1" }
+      }),
+      downloadQueue
+    );
+
+    await service.process(message);
+    expect(downloadQueue.messages).toEqual([
+      {
+        region: rentalWithPhoto.region,
+        id: rentalWithPhoto.id
+      }
+    ]);
+    expect(completed).toBe(true);
+  });
+
+  it("does not enqueue download attachment work for non-rentals or empty attachments", async () => {
+    const downloadQueue = new MemoryDownloadQueue();
+    const service = new RentalSanitizationService(
+      rawStore,
+      rentalStore,
+      new StaticProvider({
+        kind: "non_rental",
+        records: [],
+        metadata: { provider: "fake", model: "fake", promptVersion: "v1", schemaVersion: "v1" }
+      }),
+      downloadQueue
+    );
+
+    await service.process(message);
+    expect(downloadQueue.messages).toEqual([]);
   });
 
   it("does not mark raw completed when rental info persistence fails", async () => {

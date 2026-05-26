@@ -19,17 +19,10 @@ Parameters:
   GeminiModel:
     Type: String
     Default: gemini-2.5-flash
-  GeminiDataProcessingApproved:
-    Type: String
-    AllowedValues: ["true", "false"]
-    Default: "false"
   TimtroUseFakeProviders:
     Type: String
     AllowedValues: ["true", "false"]
     Default: "false"
-
-Conditions:
-  GeminiApproved: !Equals [!Ref GeminiDataProcessingApproved, "true"]
 
 Globals:
   Function:
@@ -50,7 +43,6 @@ Globals:
         APIFY_TOKEN: !Ref ApifyToken
         GEMINI_API_KEY: !Ref GeminiApiKey
         GEMINI_MODEL: !Ref GeminiModel
-        GEMINI_DATA_PROCESSING_APPROVED: !Ref GeminiDataProcessingApproved
         TIMTRO_USE_FAKE_PROVIDERS: !Ref TimtroUseFakeProviders
         LOG_LEVEL: info
 
@@ -153,6 +145,52 @@ Resources:
         deadLetterTargetArn: !GetAtt SanitizationDeadLetterQueue.Arn
         maxReceiveCount: 5
 
+  AttachmentMediaBucket:
+    Type: AWS::S3::Bucket
+    DependsOn:
+      - UpdateAttachmentMetadataFunctionAttachmentMediaPermission
+    Properties:
+      BucketName: !Sub "timtro-attachment-media-${EnvironmentName}"
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: public/attachments/
+            Function: !GetAtt UpdateAttachmentMetadataFunction.Arn
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: false
+        RestrictPublicBuckets: false
+
+  AttachmentMediaBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref AttachmentMediaBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: PublicReadMirroredAttachments
+            Effect: Allow
+            Principal: "*"
+            Action: s3:GetObject
+            Resource: !Sub "${AttachmentMediaBucket.Arn}/public/*"
+
+  DownloadAttachmentQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "timtro-download-attachment-${EnvironmentName}"
+      VisibilityTimeout: 360
+      MessageRetentionPeriod: 345600
+      SqsManagedSseEnabled: true
+
   CrawlFunction:
     Type: AWS::Serverless::Function
     Metadata:
@@ -186,7 +224,6 @@ Resources:
 
   SanitizeFunction:
     Type: AWS::Serverless::Function
-    Condition: GeminiApproved
     Metadata:
       SkipBuild: true
     Properties:
@@ -194,6 +231,9 @@ Resources:
       CodeUri: dist/
       Description: Sanitizes queued raw rental posts with the configured AI provider.
       Timeout: 120
+      Environment:
+        Variables:
+          DOWNLOAD_ATTACHMENT_QUEUE_URL: !Ref DownloadAttachmentQueue
       Events:
         SanitizationEvents:
           Type: SQS
@@ -213,16 +253,68 @@ Resources:
               Action:
                 - dynamodb:PutItem
               Resource: !GetAtt RentalInfoTableV2.Arn
+            - Effect: Allow
+              Action:
+                - sqs:SendMessage
+              Resource: !GetAtt DownloadAttachmentQueue.Arn
 
-  CrawlFunctionLogGroup:
-    Type: AWS::Logs::LogGroup
+  DownloadAttachmentFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      SkipBuild: true
     Properties:
-      LogGroupName: !Sub "/aws/lambda/${CrawlFunction}"
-      RetentionInDays: 30
+      Handler: download-attachment.handler
+      CodeUri: dist/
+      Description: Downloads Facebook attachments and mirrors them to S3.
+      Timeout: 300
+      MemorySize: 1024
+      Environment:
+        Variables:
+          DOWNLOAD_ATTACHMENT_QUEUE_URL: !Ref DownloadAttachmentQueue
+          ATTACHMENT_MEDIA_BUCKET_NAME: !Sub "timtro-attachment-media-${EnvironmentName}"
+      Events:
+        DownloadAttachmentEvents:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt DownloadAttachmentQueue.Arn
+            BatchSize: 1
+            FunctionResponseTypes:
+              - ReportBatchItemFailures
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+              Resource: !GetAtt RentalInfoTableV2.Arn
+            - Effect: Allow
+              Action:
+                - s3:PutObject
+              Resource: !Sub "arn:aws:s3:::timtro-attachment-media-${EnvironmentName}/public/*"
 
-  SanitizeFunctionLogGroup:
-    Type: AWS::Logs::LogGroup
-    Condition: GeminiApproved
+  UpdateAttachmentMetadataFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      SkipBuild: true
     Properties:
-      LogGroupName: !Sub "/aws/lambda/${SanitizeFunction}"
-      RetentionInDays: 30
+      Handler: update-attachment-metadata.handler
+      CodeUri: dist/
+      Description: Updates rental info attachment URLs when mirrored media objects are uploaded.
+      Timeout: 60
+      Environment:
+        Variables:
+          ATTACHMENT_MEDIA_BUCKET_NAME: !Sub "timtro-attachment-media-${EnvironmentName}"
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:UpdateItem
+              Resource: !GetAtt RentalInfoTableV2.Arn
+
+  UpdateAttachmentMetadataFunctionAttachmentMediaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref UpdateAttachmentMetadataFunction
+      Action: lambda:InvokeFunction
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref AWS::AccountId
+      SourceArn: !Sub "arn:aws:s3:::timtro-attachment-media-${EnvironmentName}"

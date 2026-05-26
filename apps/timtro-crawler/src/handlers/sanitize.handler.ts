@@ -3,7 +3,13 @@ import type { SQSEvent, SQSBatchResponse, SQSRecord } from "aws-lambda";
 import { sanitizationMessageSchema } from "../domain/schemas";
 import { FakeAiSanitizerProvider } from "../providers/ai/ai-sanitizer.provider";
 import { GeminiSanitizerProvider } from "../providers/ai/gemini-sanitizer.provider";
-import { createDocumentClient, DynamoRawPostStore, DynamoRentalInfoStore } from "../services/aws-clients";
+import {
+  createDocumentClient,
+  createSqsClient,
+  DynamoRawPostStore,
+  DynamoRentalInfoStore,
+  SqsDownloadAttachmentQueue
+} from "../services/aws-clients";
 import { loadCrawlerConfig } from "../services/config";
 import { RentalSanitizationService } from "../services/rental-sanitization.service";
 
@@ -15,6 +21,7 @@ export async function runSanitizeBatch(
   event: SQSEvent,
   dependencies: SanitizeHandlerDependencies
 ): Promise<SQSBatchResponse> {
+  console.info("sanitization started", JSON.stringify(event));
   const batchItemFailures = [];
 
   for (const record of event.Records) {
@@ -66,6 +73,12 @@ function createDefaultService(): RentalSanitizationService {
   const rawStore = new DynamoRawPostStore(documentClient, config.rawRentalPostsTableName);
   const rentalInfoStore = new DynamoRentalInfoStore(documentClient, config.rentalInfoTableName);
 
+  const downloadAttachmentQueue =
+    config.downloadAttachmentQueueUrl && config.enqueueDownloadAttachment
+      ? new SqsDownloadAttachmentQueue(createSqsClient({ region: config.awsRegion }), config.downloadAttachmentQueueUrl)
+      : undefined;
+  const sanitizationOptions = { enqueueDownloadAttachment: config.enqueueDownloadAttachment };
+
   if (config.useFakeProviders) {
     return new RentalSanitizationService(
       rawStore,
@@ -79,7 +92,9 @@ function createDefaultService(): RentalSanitizationService {
           promptVersion: "local",
           schemaVersion: "local"
         }
-      })
+      }),
+      downloadAttachmentQueue,
+      sanitizationOptions
     );
   }
 
@@ -93,6 +108,8 @@ function createDefaultService(): RentalSanitizationService {
     new GeminiSanitizerProvider({
       apiKey: config.geminiApiKey,
       model: config.geminiModel
-    })
+    }),
+    downloadAttachmentQueue,
+    sanitizationOptions
   );
 }

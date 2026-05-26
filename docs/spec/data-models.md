@@ -95,7 +95,7 @@ type RentalAttachment = {
 };
 ```
 
-Raw posts may retain long Facebook CDN query strings; sanitized records typically store cleaner CDN URLs copied from the raw attachments.
+Raw posts may retain long Facebook CDN query strings. Sanitized `RentalInfo` rows initially store the same Facebook CDN URLs copied from raw attachments at sanitize time. An async mirror worker later replaces `attachments[index].url` with stable public HTTPS URLs on Timtro-owned S3 (`https://{bucket}.s3.{region}.amazonaws.com/public/attachments/{rentalRegion}/{listingId}/{index}.{ext}`) when each object is uploaded. Raw posts are unchanged by mirroring.
 
 ### ProcessStatus
 
@@ -245,7 +245,7 @@ Structured listing produced by AI sanitization. One raw post may yield zero or m
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `source` | `"fb"` | ✓ | Always `fb` |
-| `sourcePostId` | `string` | ✓ | Facebook post id (matches raw `postId`) |
+| `sourcePostId` | `string` | ✓ | Canonical Facebook post key `fb_{postId}` (matches mirrored S3 prefix) |
 | `sourceCommentId` | `string` | | Set when listing was extracted from a comment |
 | `originalLink` | `string` | ✓ | Permalink to post or comment |
 | `postDate` | `string` | ✓ | Listing date (ISO 8601); from post/comment time |
