@@ -5,13 +5,19 @@
  * Env:
  * - MCP_URL (default http://localhost:3000/mcp)
  * - MCP_API_KEY (optional locally when dev bypass is active)
+ * - MCP_ACCESS_TOKEN (optional JWT smoke against OAuth-enabled servers)
  * - SKIP_SEARCH_RENTALS=1 — bỏ qua search_rentals khi chưa có AWS
  */
 const MCP_URL = process.env.MCP_URL ?? "http://localhost:3000/mcp";
 const MCP_API_KEY = process.env.MCP_API_KEY;
+const MCP_ACCESS_TOKEN = process.env.MCP_ACCESS_TOKEN;
 const SKIP_SEARCH = process.env.SKIP_SEARCH_RENTALS === "1";
 
 function authHeaders() {
+  if (MCP_ACCESS_TOKEN) {
+    return { authorization: `Bearer ${MCP_ACCESS_TOKEN}` };
+  }
+
   return MCP_API_KEY ? { authorization: `Bearer ${MCP_API_KEY}` } : {};
 }
 
@@ -27,7 +33,12 @@ async function postJsonRpc(body) {
   });
 
   if (response.status === 401) {
-    throw new Error("HTTP 401 Unauthorized — kiểm tra MCP_API_KEY");
+    const challenge = response.headers.get("www-authenticate");
+    throw new Error(
+      challenge
+        ? `HTTP 401 Unauthorized — kiểm tra MCP_API_KEY hoặc MCP_ACCESS_TOKEN (${challenge.slice(0, 120)}...)`
+        : "HTTP 401 Unauthorized — kiểm tra MCP_API_KEY hoặc MCP_ACCESS_TOKEN"
+    );
   }
 
   if (response.status === 202 || response.status === 204) {

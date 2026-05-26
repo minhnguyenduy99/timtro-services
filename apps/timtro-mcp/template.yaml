@@ -14,6 +14,18 @@ Parameters:
     Type: String
     NoEcho: true
     Description: Bearer token for MCP HTTP auth.
+  Auth0Domain:
+    Type: String
+    Default: ""
+    Description: Auth0 tenant domain, e.g. your-tenant.auth0.com.
+  McpServerUrl:
+    Type: String
+    Default: ""
+    Description: Canonical MCP resource URI, typically the stack McpApiUrl output.
+  Auth0Audience:
+    Type: String
+    Default: ""
+    Description: Auth0 API identifier; usually the same as McpServerUrl.
 
 Conditions:
   HasCustomTableName: !Not [!Equals [!Ref RentalInfoTableName, ""]]
@@ -57,6 +69,9 @@ Resources:
             - !Ref RentalInfoTableName
             - !Sub "timtro-rental-info-v2-${EnvironmentName}"
           MCP_API_KEY: !Ref McpApiKey
+          AUTH0_DOMAIN: !Ref Auth0Domain
+          AUTH0_AUDIENCE: !Ref Auth0Audience
+          MCP_SERVER_URL: !Ref McpServerUrl
           NODE_ENV: production
       Events:
         McpGet:
@@ -79,6 +94,20 @@ Resources:
             ApiId: !Ref McpHttpApi
             Path: /mcp
             Method: DELETE
+            PayloadFormatVersion: "2.0"
+        ProtectedResourceMetadataMcp:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref McpHttpApi
+            Path: /.well-known/oauth-protected-resource/mcp
+            Method: GET
+            PayloadFormatVersion: "2.0"
+        ProtectedResourceMetadataRoot:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref McpHttpApi
+            Path: /.well-known/oauth-protected-resource
+            Method: GET
             PayloadFormatVersion: "2.0"
       Policies:
         - DynamoDBReadPolicy:

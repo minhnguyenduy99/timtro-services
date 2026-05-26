@@ -123,6 +123,36 @@ describe('lambda handler', () => {
     expect(result.body).toBe('Unauthorized');
   });
 
+  it('returns OAuth discovery 401 when Auth0 is configured and auth is missing', async () => {
+    process.env.AUTH0_DOMAIN = 'timtro.auth0.com';
+    process.env.MCP_SERVER_URL = 'https://api.example.com/mcp';
+    process.env.MCP_API_KEY = 'secret-key';
+    process.env.NODE_ENV = 'production';
+
+    const result = await invokeHandler(createApiGatewayEvent('POST'));
+
+    expect(result.statusCode).toBe(401);
+    expect(result.headers?.['www-authenticate']).toContain('resource_metadata=');
+    expect(JSON.parse(result.body ?? '{}')).toMatchObject({ error: 'unauthorized' });
+  });
+
+  it('routes protected resource metadata requests', async () => {
+    process.env.AUTH0_DOMAIN = 'timtro.auth0.com';
+    process.env.MCP_SERVER_URL = 'https://api.example.com/mcp';
+
+    const result = await invokeHandler(
+      createApiGatewayEvent('GET', {
+        path: '/.well-known/oauth-protected-resource/mcp'
+      })
+    );
+
+    expect(result.statusCode).toBe(200);
+    expect(JSON.parse(result.body ?? '{}')).toMatchObject({
+      resource: 'https://api.example.com/mcp',
+      authorization_servers: ['https://timtro.auth0.com/']
+    });
+  });
+
   it('returns 500 when the underlying MCP handler throws', async () => {
     vi.spyOn(mcpHttpHandler, 'POST').mockRejectedValue(new Error('boom'));
 

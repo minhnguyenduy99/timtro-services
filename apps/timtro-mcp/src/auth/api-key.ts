@@ -27,7 +27,6 @@ function constantTimeEqual(left: string, right: string): boolean {
 
 function parseBearerToken(request: Request): string | undefined {
   const authorization = request.headers.get('authorization');
-  console.log('authorization', authorization);
   if (!authorization) {
     return undefined;
   }
@@ -42,7 +41,6 @@ function parseBearerToken(request: Request): string | undefined {
 
 export function validateApiKey(request: Request): AuthInfo | undefined {
   const configuredKey = readConfiguredApiKey();
-  console.log('configuredKey', configuredKey);
 
   if (!configuredKey) {
     if (!isProduction()) {

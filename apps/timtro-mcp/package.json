@@ -15,6 +15,7 @@
     "inspector:local": "nx inspector:local"
   },
   "dependencies": {
+    "@auth0/auth0-api-js": "^1.6.1",
     "@aws-sdk/client-dynamodb": "^3.1049.0",
     "@aws-sdk/lib-dynamodb": "^3.1049.0",
     "@cfworker/json-schema": "^4.1.1",

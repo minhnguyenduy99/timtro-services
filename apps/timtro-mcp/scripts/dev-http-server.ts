@@ -1,5 +1,6 @@
 import { createServer, type IncomingMessage } from 'node:http';
 
+import { handleProtectedResourceMetadataRequest } from '../src/auth/protected-resource-metadata.js';
 import { DELETE, GET, POST } from '../src/mcp-http-handler.js';
 
 const PORT = Number(process.env.PORT ?? 3000);
@@ -42,6 +43,21 @@ function buildWebRequest(request: IncomingMessage, body?: Uint8Array): Request {
 
 async function dispatch(request: IncomingMessage, response: import('node:http').ServerResponse) {
   const url = new URL(request.url ?? '/', `http://${request.headers.host ?? `localhost:${PORT}`}`);
+
+  if (
+    request.method === 'GET' &&
+    (url.pathname === '/.well-known/oauth-protected-resource/mcp' ||
+      url.pathname === '/.well-known/oauth-protected-resource')
+  ) {
+    const webResponse = handleProtectedResourceMetadataRequest();
+    response.statusCode = webResponse.status;
+    webResponse.headers.forEach((value, key) => {
+      response.setHeader(key, value);
+    });
+    response.end(Buffer.from(await webResponse.arrayBuffer()));
+    return;
+  }
+
   if (url.pathname !== '/mcp') {
     response.statusCode = 404;
     response.end('Not Found');

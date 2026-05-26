@@ -3,7 +3,10 @@ import { readFileSync } from "node:fs";
 const TEMPLATE_PARAMETERS = new Set([
   "EnvironmentName",
   "RentalInfoTableName",
-  "McpApiKey"
+  "McpApiKey",
+  "Auth0Domain",
+  "McpServerUrl",
+  "Auth0Audience"
 ]);
 
 const envFile = process.argv[2] ?? "env.example.json";

@@ -42,11 +42,26 @@ describe('SAM template shape', () => {
   });
 
   it('parameterizes environment and exports API URL', () => {
-    for (const parameter of ['EnvironmentName', 'RentalInfoTableName', 'McpApiKey']) {
+    for (const parameter of [
+      'EnvironmentName',
+      'RentalInfoTableName',
+      'McpApiKey',
+      'Auth0Domain',
+      'McpServerUrl',
+      'Auth0Audience'
+    ]) {
       expect(template).toContain(`${parameter}:`);
     }
 
     expect(template).toContain('McpApiUrl:');
     expect(template).toContain('McpFunctionArn:');
+  });
+
+  it('wires Auth0 env vars and well-known metadata routes', () => {
+    expect(template).toContain('AUTH0_DOMAIN: !Ref Auth0Domain');
+    expect(template).toContain('AUTH0_AUDIENCE: !Ref Auth0Audience');
+    expect(template).toContain('MCP_SERVER_URL: !Ref McpServerUrl');
+    expect(template).toContain('Path: /.well-known/oauth-protected-resource/mcp');
+    expect(template).toContain('Path: /.well-known/oauth-protected-resource');
   });
 });

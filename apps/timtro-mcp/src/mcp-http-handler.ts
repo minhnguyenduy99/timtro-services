@@ -1,6 +1,6 @@
 import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/server';
 
-import { validateApiKey } from './auth/api-key';
+import { resolveAuth } from './auth/resolve-auth';
 import { createTimtroMcpServer } from './create-mcp-server';
 
 const server = createTimtroMcpServer();
@@ -14,14 +14,12 @@ const ready = server.connect(transport);
 async function handleMcpRequest(request: Request): Promise<Response> {
   await ready;
 
-  console.log('handleMcpRequest: connected');
-
-  const authInfo = validateApiKey(request);
-  if (!authInfo) {
-    return new Response('Unauthorized', { status: 401 });
+  const authResult = await resolveAuth(request);
+  if (!authResult.ok) {
+    return authResult.response;
   }
 
-  return transport.handleRequest(request, { authInfo });
+  return transport.handleRequest(request, { authInfo: authResult.authInfo });
 }
 
 export async function GET(request: Request): Promise<Response> {
