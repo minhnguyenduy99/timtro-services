@@ -8,7 +8,7 @@
       "executor": "nx:run-commands",
       "outputs": ["{projectRoot}/dist"],
       "options": {
-        "command": "TIMTRO_CRAWLER_HANDLER=crawl vite build && TIMTRO_CRAWLER_HANDLER=sanitize vite build && sam build",
+        "command": "TIMTRO_CRAWLER_HANDLER=crawl vite build && TIMTRO_CRAWLER_HANDLER=sanitize vite build && TIMTRO_CRAWLER_HANDLER=download-attachment vite build && TIMTRO_CRAWLER_HANDLER=update-attachment-metadata vite build && sam build",
         "cwd": "{projectRoot}"
       }
     },
@@ -24,6 +24,22 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "TIMTRO_CRAWLER_HANDLER=sanitize vite build --watch",
+        "cwd": "{projectRoot}"
+      },
+      "continuous": true
+    },
+    "download-attachment:watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "TIMTRO_CRAWLER_HANDLER=download-attachment vite build --watch",
+        "cwd": "{projectRoot}"
+      },
+      "continuous": true
+    },
+    "update-attachment-metadata:watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "TIMTRO_CRAWLER_HANDLER=update-attachment-metadata vite build --watch",
         "cwd": "{projectRoot}"
       },
       "continuous": true
@@ -64,6 +80,22 @@
         "cwd": "{projectRoot}"
       },
       "dependsOn": ["sanitize:watch"]
+    },
+    "download-attachment:invoke": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "sam local invoke DownloadAttachmentFunction --template template.yaml --env-vars env.local.json --event events/download-attachment-sqs.json",
+        "cwd": "{projectRoot}"
+      },
+      "dependsOn": ["download-attachment:watch"]
+    },
+    "update-attachment-metadata:invoke": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "sam local invoke UpdateAttachmentMetadataFunction --template template.yaml --env-vars env.local.json --event events/update-attachment-metadata-s3.json",
+        "cwd": "{projectRoot}"
+      },
+      "dependsOn": ["update-attachment-metadata:watch"]
     },
     "deploy": {
       "executor": "nx:run-commands",

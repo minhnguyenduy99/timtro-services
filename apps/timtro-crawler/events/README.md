@@ -12,6 +12,4 @@ pnpm nx crawl:watch timtro-crawler
 pnpm nx crawl:invoke timtro-crawler
 ```
 
-Put CloudFormation values under `Parameters`. Put `RAW_RENTAL_POSTS_TABLE_NAME`, `RENTAL_INFO_TABLE_NAME`, and `SANITIZATION_QUEUE_URL` under `CrawlFunction` / `SanitizeFunction` so `--env-vars` overrides SAM local's unresolved `!Ref` values.
-
-Set `GeminiDataProcessingApproved` to `"true"` so `SanitizeFunction` is included in the template during local invoke.
+Put CloudFormation values and Lambda runtime overrides in `env.local.json` so `--env-vars` overrides SAM local's unresolved `!Ref` values.

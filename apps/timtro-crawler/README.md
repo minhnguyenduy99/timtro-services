@@ -9,6 +9,8 @@ Required non-secret environment variables:
 - `RAW_RENTAL_POSTS_TABLE_NAME`: DynamoDB table for raw Facebook post evidence.
 - `RENTAL_INFO_TABLE_NAME`: DynamoDB table for normalized rental info keyed by `region` and `id`. After v2 cutover this points to `timtro-rental-info-v2-{env}` (LSIs on `postDate` and `price` for MCP search).
 - `SANITIZATION_QUEUE_URL`: SQS queue URL for raw post sanitization messages.
+- `DOWNLOAD_ATTACHMENT_QUEUE_URL`: SQS queue URL for async attachment mirroring (set automatically in deployed Lambdas via `!Ref`).
+- `ATTACHMENT_MEDIA_BUCKET_NAME`: S3 bucket for mirrored attachment media (set automatically in deployed Lambdas via `!Ref`).
 - `APIFY_ACTOR_ID`: Apify actor id for the Facebook group crawler.
 - `FACEBOOK_GROUP_URLS`: Comma-separated Facebook group URLs to crawl.
 - `GEMINI_MODEL`: Gemini model name, defaulting to `gemini-2.5-flash`.
@@ -16,6 +18,7 @@ Required non-secret environment variables:
 - `LOG_LEVEL`: Operational log level.
 - `TIMTRO_USE_FAKE_PROVIDERS`: Set to `true` for offline local debugging.
 - `TIMTRO_ENQUEUE_SANITIZATION`: Set to `false` on `CrawlFunction` during local crawl-only invokes to keep raw posts `pending` until you manually run `sanitize:invoke`. Automatically disabled when `TIMTRO_USE_FAKE_PROVIDERS=true`.
+- `TIMTRO_ENQUEUE_DOWNLOAD_ATTACHMENT`: Set to `false` to skip mirroring enqueue after sanitize. Automatically disabled when `TIMTRO_USE_FAKE_PROVIDERS=true`.
 
 Required provider credentials (Lambda environment variables, `NoEcho` in CloudFormation):
 
@@ -54,14 +57,7 @@ pnpm nx crawl:invoke timtro-crawler
 pnpm nx sanitize:invoke timtro-crawler
 ```
 
-`sam local invoke` uses two mechanisms from `env.local.json`:
-
-| Section | SAM flag | Purpose |
-|---------|----------|---------|
-| `Parameters` | `--parameter-overrides` | CloudFormation template parameters only (`ApifyActorId`, `TimtroUseFakeProviders`, …) |
-| `CrawlFunction` / `SanitizeFunction` | `--env-vars` | Lambda runtime env overrides (`RAW_RENTAL_POSTS_TABLE_NAME`, `SANITIZATION_QUEUE_URL`, …) |
-
-SAM local does not resolve `!Ref` on DynamoDB/SQS to real names (you may see `RawRentalPostsTable` instead). Put actual table names and queue URLs under the function sections. Deployed Lambdas still get those values from `template.yaml` `!Ref` automatically.
+`sam local invoke` reads runtime and resource settings from `env.local.json` (see `env.local.example.json`). SAM local does not resolve `!Ref` on DynamoDB/SQS to real names (you may see `RawRentalPostsTable` instead). Put actual table names, queue URLs, and `ATTACHMENT_MEDIA_BUCKET_NAME` in that file. Deployed Lambdas still get those values from `template.yaml` `!Ref` automatically.
 
 For offline debugging with fake providers only, `TimtroUseFakeProviders=true` is enough for a smoke invoke. To hit real DynamoDB/SQS locally, set the function env vars to resources in your account.
 
@@ -133,9 +129,32 @@ Replay starts from raw records, not Apify. For a raw post stuck in `pending` or 
 
 Stale messages whose `contentHash` no longer matches the raw record are acknowledged without AI spend. Duplicate delivery after completion is also acknowledged without another provider call.
 
+## Attachment mirroring
+
+After sanitization writes `RentalInfo` rows with Facebook CDN URLs, `SanitizeFunction` enqueues a download job when any listing has attachments. The pipeline is:
+
+1. `SanitizeFunction` → `RentalInfoTableV2` (FB URLs) + `DownloadAttachmentQueue`
+2. `DownloadAttachmentFunction` → downloads media → `AttachmentMediaBucket` under `public/attachments/{region}/{listingId}/{index}.{ext}`
+3. Each mirrored object triggers `UpdateAttachmentMetadataFunction`, which parses `region`, `listingId`, and attachment index from the S3 key and patches `attachments[index].url` on that listing
+
+Public object URLs use `https://{bucket}.s3.{region}.amazonaws.com/{key}`. MCP may briefly return FB URLs until mirroring completes (typically seconds to minutes). Listings that already point at the media bucket are skipped.
+
+Download attachment queue messages identify one rental listing (no attachment URLs in the body):
+
+```json
+{
+  "region": "ho_chi_minh_district_1",
+  "id": "fb_{postId}"
+}
+```
+
+The worker loads `attachments` from `RentalInfoTableV2`, mirrors Facebook URLs to S3 under `public/attachments/{region}/{listingId}/…`, and `UpdateAttachmentMetadataFunction` patches that listing when S3 objects are created. Sanitize enqueues at most one message per distinct `sourcePostId`.
+
+Local fake-provider runs skip mirror enqueue. To exercise mirroring locally, deploy or point function env vars at real queue/bucket/table resources.
+
 ## Data Handling
 
-Raw Facebook text/comments and AI inputs are sensitive user-generated content. The service stores raw evidence for replay, minimizes Gemini payloads to listing-relevant fields, uses redacted logging, enables encryption on queues/tables, and requires `GEMINI_DATA_PROCESSING_APPROVED=true` before production deployment.
+Raw Facebook text/comments and AI inputs are sensitive user-generated content. The service stores raw evidence for replay, minimizes Gemini payloads to listing-relevant fields, uses redacted logging, and enables encryption on queues/tables.
 
 ## CI/CD
 
@@ -146,7 +165,6 @@ Raw Facebook text/comments and AI inputs are sensitive user-generated content. T
 - `TIMTRO_CRAWLER_STACK_NAME`
 - `TIMTRO_CRAWLER_ENVIRONMENT`
 - `SAM_DEPLOY_BUCKET`
-- `GEMINI_DATA_PROCESSING_APPROVED`
 - `APIFY_ACTOR_ID`
 - `FACEBOOK_GROUP_URLS`
 - `APIFY_TOKEN`

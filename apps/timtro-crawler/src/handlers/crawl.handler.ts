@@ -38,7 +38,8 @@ export async function runCrawl(dependencies: CrawlHandlerDependencies): Promise<
   };
 }
 
-export async function handler(_event: ScheduledEvent): Promise<{ statusCode: number; body: string }> {
+export async function handler(event: ScheduledEvent): Promise<{ statusCode: number; body: string }> {
+  console.info("crawl started", JSON.stringify(event));
   const dependencies = await createDefaultDependencies();
   const result = await runCrawl(dependencies);
   console.info("crawl completed", {

@@ -10,7 +10,7 @@ import {
   extractFacebookPostIdentity,
   mapApifyPostToRawPost
 } from "../../src/domain/raw-rental-post";
-import { buildRentalInfoId } from "@timtro/rental-info";
+import { buildRentalInfoId, buildSourcePostId } from "@timtro/rental-info";
 
 describe("Facebook source identity mapping", () => {
   it("builds raw post ids from group and post identifiers", () => {
@@ -33,6 +33,7 @@ describe("Facebook source identity mapping", () => {
   it("builds deterministic sanitized ids for posts and comments", () => {
     expect(buildRentalInfoId("4675629119370956")).toBe("fb_4675629119370956");
     expect(buildRentalInfoId("4675629119370956", "4675629046037630")).toBe("fb_4675629046037630");
+    expect(buildSourcePostId("4675629119370956")).toBe("fb_4675629119370956");
   });
 
   it("keeps comments inside raw post evidence for sanitizer fan-out", () => {

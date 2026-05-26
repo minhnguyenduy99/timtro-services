@@ -1,6 +1,7 @@
 export {
   buildRegion,
   buildRentalInfoId,
+  buildSourcePostId,
   normalizeRegionPart,
   toRentalInfo,
   type RentalAttachment,

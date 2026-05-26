@@ -1,0 +1,38 @@
+{
+  "Records": [
+    {
+      "eventVersion": "2.1",
+      "eventSource": "aws:s3",
+      "awsRegion": "ap-southeast-1",
+      "eventTime": "2026-05-26T15:03:55.596Z",
+      "eventName": "ObjectCreated:Put",
+      "userIdentity": {
+        "principalId": "AWS:AROATH2HQAZKZEDLUUUXC:timtro-crawler-dev-DownloadAttachmentFunction-es4v1DqO8yi5"
+      },
+      "requestParameters": {
+        "sourceIPAddress": "13.229.53.245"
+      },
+      "responseElements": {
+        "x-amz-request-id": "1SA6A4YRPXQ0FNQF",
+        "x-amz-id-2": "89opYc5tm1ZHNznF8UjDiHfph9lhaVbm/psVY3lW5tj1LpyGdLpE3RwsWuEzVRaLm2XM0fSnA5JuV5LnGmKBM8/SZ7qRlyLZ"
+      },
+      "s3": {
+        "s3SchemaVersion": "1.0",
+        "configurationId": "ZTI3ZWQ2YTQtYTQwMS00ODQ0LWJhNjUtYWM3MGQwNjUzYTZm",
+        "bucket": {
+          "name": "timtro-attachment-media-dev",
+          "ownerIdentity": {
+            "principalId": "A2LVSMUKGCDV6K"
+          },
+          "arn": "arn:aws:s3:::timtro-attachment-media-dev"
+        },
+        "object": {
+          "key": "public/attachments/ho_chi_minh_binh_thanh/fb_4685317771735424/3.jpg",
+          "size": 25636,
+          "eTag": "d8ff96798bf7460f2756b21b950e2832",
+          "sequencer": "006A15B65B904BAB25"
+        }
+      }
+    }
+  ]
+}

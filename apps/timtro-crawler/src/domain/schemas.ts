@@ -19,3 +19,5 @@ export const sanitizationMessageSchema = z.object({
   groupId: nonEmptyString,
   postId: nonEmptyString
 });
+
+export { downloadAttachmentMessageSchema, type DownloadAttachmentMessage } from "./download-attachment-message";

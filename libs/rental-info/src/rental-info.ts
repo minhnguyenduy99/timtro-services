@@ -52,6 +52,15 @@ export function buildRentalInfoId(postId: string, commentId?: string): string {
   return `fb_${commentId ?? postId}`;
 }
 
+/** Canonical Facebook post key used in RentalInfo.sourcePostId and mirrored S3 paths. */
+export function buildSourcePostId(postId: string): string {
+  return buildRentalInfoId(postId);
+}
+
+function postIdForRentalInfoId(sourcePostId: string): string {
+  return sourcePostId.startsWith("fb_") ? sourcePostId.slice(3) : sourcePostId;
+}
+
 export { normalizeRegionPart } from "./region-mapping";
 
 export function toRentalInfo(candidate: RentalInfoCandidate): RentalInfo {
@@ -75,6 +84,6 @@ export function toRentalInfo(candidate: RentalInfoCandidate): RentalInfo {
     attachments: candidate.attachments,
     source: "fb",
     region: `${region.city}_${region.district}`,
-    id: buildRentalInfoId(candidate.sourcePostId, candidate.sourceCommentId)
+    id: buildRentalInfoId(postIdForRentalInfoId(candidate.sourcePostId), candidate.sourceCommentId)
   };
 }

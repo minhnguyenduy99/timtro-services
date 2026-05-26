@@ -102,7 +102,8 @@ describe("AI sanitization response schema", () => {
       classification: "rental",
       records: [
         {
-          id: "fb_4680743102192891",
+          id: "fb_4680482768885591",
+          sourcePostId: "fb_4680482768885591",
           postDate: "2026-05-23T07:43:42.000Z",
           timestamp: "2026-05-23T02:20:59.000Z"
         }
@@ -152,6 +153,7 @@ describe("AI sanitization response schema", () => {
       records: [
         {
           id: "fb_4675629046037630",
+          sourcePostId: "fb_4680482768885591",
           timestamp: "2026-05-23T08:15:00.000Z"
         }
       ]
@@ -213,6 +215,7 @@ describe("AI sanitization response schema", () => {
       records: [
         {
           id: "fb_4680482768885591",
+          sourcePostId: "fb_4680482768885591",
           region: "ho_chi_minh_binh_thanh",
           city: "ho_chi_minh",
           cityLabel: "Hồ Chí Minh",
