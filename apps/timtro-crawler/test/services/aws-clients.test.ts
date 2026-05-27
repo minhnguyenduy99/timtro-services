@@ -6,9 +6,11 @@ import {
   buildPublicS3Url,
   DynamoRentalInfoStore,
   parseAttachmentMediaKey,
+  S3AttachmentMediaStore,
   SqsDownloadAttachmentQueue,
   SqsSanitizationQueue
 } from "../../src/services/aws-clients";
+import { nodeReadableFromBuffer } from "../../src/services/attachment-stream";
 
 describe("AWS client helpers", () => {
   it("serializes sanitization messages without raw post text", async () => {
@@ -103,6 +105,30 @@ describe("AWS client helpers", () => {
 
     expect(JSON.stringify(sent[0])).toContain("attachments[0].#url");
     expect(JSON.stringify(sent[0])).toContain("attribute_exists(attachments[0])");
+  });
+
+  it("uploads attachment media with inline content disposition", async () => {
+    const sent: unknown[] = [];
+    const store = new S3AttachmentMediaStore(
+      {
+        send: async (command: unknown) => {
+          sent.push(command);
+          return {};
+        }
+      } as never,
+      "timtro-attachment-media-dev"
+    );
+
+    await store.putObjectStream(
+      "public/attachments/ho_chi_minh_district_1/fb_post/0.jpg",
+      nodeReadableFromBuffer(new Uint8Array([1, 2, 3])),
+      "image/jpeg"
+    );
+
+    const command = sent[0] as { input: { ContentDisposition?: string; ContentType?: string; Key?: string } };
+    expect(command.input.ContentDisposition).toBe("inline");
+    expect(command.input.ContentType).toBe("image/jpeg");
+    expect(command.input.Key).toBe("public/attachments/ho_chi_minh_district_1/fb_post/0.jpg");
   });
 
   it("loads rental info by region and id", async () => {

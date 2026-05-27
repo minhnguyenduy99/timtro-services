@@ -229,7 +229,8 @@ export class S3AttachmentMediaStore implements S3MediaStore {
         Key: key,
         Body: bytes,
         ContentLength: bytes.length,
-        ContentType: contentType
+        ContentType: contentType,
+        ContentDisposition: "inline"
       })
     );
   }
